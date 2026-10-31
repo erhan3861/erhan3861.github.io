@@ -473,7 +473,7 @@ img, svg { display: block; }
 .pf-col.one { grid-template-rows: minmax(0, 1fr); }   /* form kartı sütunun tamamı */
 .pf-card { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; min-height: 0; padding: clamp(16px, 2.2vh, 22px) 22px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: var(--shadow); }
 /* kart köşesindeki saydam görsel: başlığın sağında, içeriğin arkasında */
-.pf-art { position: absolute; z-index: -1; top: -8px; right: -6px; width: clamp(78px, 11vh, 104px); height: clamp(78px, 11vh, 104px); object-fit: contain; mix-blend-mode: multiply; opacity: .55; pointer-events: none; }
+.pf-art { position: absolute; z-index: -1; top: clamp(12px, 1.8vh, 18px); right: clamp(14px, 1.2vw, 20px); width: clamp(60px, 8.5vh, 82px); height: clamp(60px, 8.5vh, 82px); object-fit: contain; mix-blend-mode: multiply; opacity: .55; pointer-events: none; }
 .pf-card-head { display: grid; gap: 2px; margin-bottom: clamp(10px, 1.6vh, 16px); padding-right: 84px; }
 .pf-card-head h2 { font: 700 18px/1.2 var(--display); letter-spacing: -0.02em; }
 .pf-hint { font-size: 12.5px; color: var(--ink-3); }
@@ -526,7 +526,9 @@ img, svg { display: block; }
 .form-tile:hover .tile-go .icon { transform: translateX(3px); }
 .form-tile.soon .tile-go { background: var(--v); }
 .btn-tile { grid-template-columns: 1fr; margin-top: auto; padding: 14px 18px; min-height: 76px; }
-.btn-tile .tile-art { height: 96%; max-width: 34%; bottom: -10px; }
+.btn-tile .tile-art { height: 74%; max-width: 30%; right: 12px; bottom: 50%; transform: translateY(50%); }
+.btn-tile:hover .tile-art { transform: translateY(50%) scale(1.05) rotate(-2deg); }
+.btn-tile .tile-arrow { display: none; }   /* görsel sağda; ok fazlalık */
 .btn-tile strong { font-size: 15.5px; }
 .tile-arrow { position: absolute; top: 16px; right: 16px; width: 16px; height: 16px; color: var(--ink-2); }
 
@@ -573,7 +575,7 @@ html.text-l body { font-size: 16.5px; }
 .form-tile:hover .tile-art.mid { opacity: 1; transform: scale(1.04) rotate(-2deg); }
 .form-tile .tile-go { justify-self: stretch; justify-content: center; height: 44px; }
 /* hesap kartı: güvenlik + tercihler; altta saydam görsel */
-.pf-art.low { top: auto; bottom: -16px; right: -12px; width: clamp(110px, 17vh, 160px); height: clamp(110px, 17vh, 160px); opacity: .4; }
+.pf-art.low { top: auto; bottom: 74px; right: 16px;   /* sağ alttaki sohbet düğmesinin üstünde kalsın */ width: clamp(110px, 17vh, 160px); height: clamp(110px, 17vh, 160px); opacity: .4; }
 .pf-account .btn-tile { margin-top: 2px; }
 .pf-sub { margin: clamp(12px, 2vh, 20px) 0 2px; font: 600 12px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
 .pf-sub + .tg { border-top: 0; }

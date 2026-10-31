@@ -352,33 +352,104 @@ taniSkip.addEventListener("click", () => taniGo(tani.i + 1));
 taniDots.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b && !b.disabled) taniGo(+b.dataset.go); });
 renderTani();
 
-/* ---------- sohbet: sağ alttaki işaret; yalnız yazı alanı, demo yanıtlar ---------- */
-const fab = $("[data-chat-fab]"), pop = $("[data-chat-pop]"), log = $("[data-chat-log]");
-const input = $("[data-chat-input]"), send = $("[data-chat-send]");
-const openChat = (open) => {
-  pop.hidden = !open; fab.setAttribute("aria-expanded", String(open));
-  if (open) input.focus();
-};
-fab.addEventListener("click", () => openChat(pop.hidden));
-addEventListener("keydown", (e) => { if (e.key === "Escape" && !pop.hidden) { openChat(false); fab.focus(); } });
-const grow = () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 140) + "px"; send.disabled = !input.value.trim(); };
-input.addEventListener("input", grow);
-input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("[data-chat-form]").requestSubmit(); } });
-const REPLIES = [
-  "Güzel soru. Önce konuyu bir cümleyle anlatır mısın, sonra birlikte adım adım ilerleyelim.",
-  "Bunu Araçlar'daki Görsel Oluştur ile deneyebilirsin. İstersen sana bir başlangıç cümlesi yazayım.",
-  "Bu haftaki görevin “Oyunun kuralını anlat”. Hangi oyunu seçtiğini söylersen kurallarını birlikte sıralarız.",
+/* ---------- sohbet: sağ alttaki işaret tam sayfa açılır (AI Stüdyo Metin sekmesi gibi) ----------
+   Yalnız metin modelleri; geçmiş bu tarayıcıda saklanır (aila-sohbetler). Yanıtlar demo. */
+const MODELS = ["Gemini 2.5 Flash Lite", "Gemini 2.5 Flash", "GPT-4.1 mini", "Claude Haiku"];
+const IDEAS = [
+  "Bir bilim kurgu hikâyesi için 3 farklı başlangıç cümlesi yaz.",
+  "Kesirleri pizza örneğiyle anlatır mısın?",
+  "Fotosentezi 5 maddede özetle.",
+  "Hafta sonu için eğlenceli bir okuma planı hazırla.",
+  "Bana İngilizce 10 yeni kelime ve örnek cümle ver.",
 ];
-let ri = 0;
-const bubble = (who, text) => {
-  const li = document.createElement("li"); li.className = `msg ${who}`; li.textContent = text;
-  log.append(li); log.scrollTop = log.scrollHeight; return li;
+const DEMO = [
+  "Harika bir fikir! Önce birkaç şey soralım: Bu konuda neyi zaten biliyorsun, neyi merak ediyorsun? Ona göre adım adım ilerleyelim.",
+  "Bunu üç adımda yapabiliriz:\n1. Konuyu bir cümleyle tanımla.\n2. Bir örnek seç.\n3. Örneği kendi cümlelerinle anlat.\nİlk adımla başlayalım mı?",
+  "Bunu seviyene uygun anlatayım. Takıldığın yer olursa “daha basit anlat” yazman yeterli.",
+];
+const ac = $("[data-ai-chat]"), acLog = $("[data-ac-log]"), acHello = $("[data-ac-hello]"), acInput = $("[data-ac-input]"), acSend = $("[data-ac-send]");
+const acScroll = $("[data-ac-scroll]"), acList = $("[data-ac-list]"), acFab = $("[data-chat-fab]");
+let chats = [], cur = null, model = MODELS[0], demoI = 0;
+try { chats = JSON.parse(localStorage.getItem("aila-sohbetler") || "[]"); } catch (e) { chats = []; }
+const save = () => { try { localStorage.setItem("aila-sohbetler", JSON.stringify(chats.slice(0, 50))); } catch (e) { /* depolama kapalı */ } };
+
+const dayLabel = (ts) => {
+  const d = new Date(ts), t = new Date(), y = new Date(); y.setDate(t.getDate() - 1);
+  if (d.toDateString() === t.toDateString()) return "Bugün";
+  if (d.toDateString() === y.toDateString()) return "Dün";
+  return "Daha önce";
 };
-$("[data-chat-form]").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const v = input.value.trim(); if (!v) return;
-  pop.classList.add("has-log");
-  bubble("me", v); input.value = ""; grow();
-  const wait = bubble("ai typing", "…");
-  setTimeout(() => { wait.classList.remove("typing"); wait.textContent = REPLIES[ri++ % REPLIES.length]; log.scrollTop = log.scrollHeight; }, 900);
+const renderList = () => {
+  $("[data-ac-count]").textContent = `${chats.length} sohbet`;
+  if (!chats.length) {
+    acList.innerHTML = `<div class="ac-empty"><span class="ac-empty-ic"><svg class="icon" aria-hidden="true"><use href="#i-spark" /></svg></span><strong>Henüz sohbet yok</strong><span>Yeni bir sohbet başlatarak AI-LA ile konuşmaya başla!</span></div>`;
+    return;
+  }
+  let html = "", last = "";
+  chats.forEach((c) => {
+    const g = dayLabel(c.ts);
+    if (g !== last) { html += `<p class="ac-group">${g}</p>`; last = g; }
+    html += `<div class="ac-item${cur && c.id === cur.id ? " on" : ""}"><button type="button" class="ac-open" data-open="${c.id}">${esc(c.title)}</button><button type="button" class="ac-del" aria-label="Sohbeti sil" data-del="${c.id}"><svg class="icon" aria-hidden="true"><use href="#i-trash" /></svg></button></div>`;
+  });
+  acList.innerHTML = html;
+};
+const msgHtml = (m) => m.r === "me" ? `<li class="ac-msg me">${esc(m.t)}</li>`
+  : `<li class="ac-msg ai"><img class="ac-av" src="assets/aila-maskot.png" alt=""><div><span class="ac-who">AI-LA · ${esc(m.m || model)}</span><p>${esc(m.t).replace(/\n/g, "<br>")}</p></div></li>`;
+const renderChat = () => {
+  acHello.hidden = !!(cur && cur.msgs.length);
+  acLog.innerHTML = cur ? cur.msgs.map(msgHtml).join("") : "";
+  $("[data-ac-title]").textContent = cur ? cur.title : "Yeni sohbet";
+  acScroll.scrollTop = acScroll.scrollHeight;
+  renderList();
+};
+const newChat = () => { cur = null; renderChat(); acInput.focus(); };
+const openAc = (open) => {
+  ac.hidden = !open; acFab.setAttribute("aria-expanded", String(open));
+  document.body.classList.toggle("chat-full", open);   // .ac-open değil: o geçmiş satırının sınıfı, body'ye de uyar
+  if (open) { renderChat(); acInput.focus(); } else acFab.focus();
+};
+acFab.addEventListener("click", () => openAc(true));
+$("[data-ac-close]").addEventListener("click", () => openAc(false));
+addEventListener("keydown", (e) => { if (e.key === "Escape" && !ac.hidden) { if (!$("[data-ac-model-list]").hidden) toggleModels(false); else openAc(false); } });
+$$("[data-ac-side-toggle]").forEach((b) => b.addEventListener("click", () => ac.classList.toggle("side-off")));
+$("[data-ac-new]").addEventListener("click", newChat);
+acList.addEventListener("click", (e) => {
+  const o = e.target.closest("[data-open]"), d = e.target.closest("[data-del]");
+  if (o) { cur = chats.find((c) => c.id === o.dataset.open) || null; renderChat(); }
+  if (d) { chats = chats.filter((c) => c.id !== d.dataset.del); if (cur && cur.id === d.dataset.del) cur = null; save(); renderChat(); }
 });
+
+// model seçici
+const mList = $("[data-ac-model-list]"), mBtn = $("[data-ac-model-btn]");
+const toggleModels = (open) => { mList.hidden = !open; mBtn.setAttribute("aria-expanded", String(open)); };
+const renderModels = () => { mList.innerHTML = MODELS.map((m) => `<li role="option" aria-selected="${m === model}" tabindex="0" data-model="${m}">${m}<svg class="icon" aria-hidden="true"><use href="#i-check" /></svg></li>`).join(""); };
+renderModels();
+mBtn.addEventListener("click", () => toggleModels(mList.hidden));
+mList.addEventListener("click", (e) => {
+  const li = e.target.closest("[data-model]"); if (!li) return;
+  model = li.dataset.model; $("[data-ac-model]").textContent = model; renderModels(); toggleModels(false);
+});
+document.addEventListener("click", (e) => { if (!e.target.closest(".ac-model")) toggleModels(false); });
+
+// yazma alanı
+const acGrow = () => { acInput.style.height = "auto"; acInput.style.height = Math.min(acInput.scrollHeight, 200) + "px"; acSend.disabled = !acInput.value.trim(); };
+acInput.addEventListener("input", acGrow);
+acInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("[data-ac-form]").requestSubmit(); } });
+$("[data-ac-shuffle]").addEventListener("click", () => { acInput.value = IDEAS[Math.floor(Math.random() * IDEAS.length)]; acGrow(); acInput.focus(); });
+$$(".ac-sug").forEach((b) => b.addEventListener("click", () => { acInput.value = b.textContent.trim(); acGrow(); $("[data-ac-form]").requestSubmit(); }));
+$("[data-ac-attach]").addEventListener("click", () => { acInput.placeholder = "Dosya ekleme demoda kapalı; sorunu yazabilirsin…"; acInput.focus(); });
+$("[data-ac-mic]").addEventListener("click", () => { acInput.placeholder = "Sesle yazma demoda kapalı…"; acInput.focus(); });
+
+$("[data-ac-form]").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const t = acInput.value.trim(); if (!t) return;
+  if (!cur) { cur = { id: String(Date.now()), title: t.length > 42 ? t.slice(0, 40) + "…" : t, ts: Date.now(), msgs: [] }; chats.unshift(cur); }
+  cur.msgs.push({ r: "me", t }); cur.ts = Date.now();
+  chats = [cur, ...chats.filter((c) => c !== cur)];
+  acInput.value = ""; acGrow(); save(); renderChat();
+  const wait = document.createElement("li"); wait.className = "ac-msg ai"; wait.innerHTML = `<img class="ac-av" src="assets/aila-maskot.png" alt=""><div><span class="ac-who">AI-LA · ${esc(model)}</span><p class="ac-typing"><i></i><i></i><i></i></p></div>`;
+  acLog.append(wait); acScroll.scrollTop = acScroll.scrollHeight;
+  const chat = cur;
+  setTimeout(() => { chat.msgs.push({ r: "ai", t: DEMO[demoI++ % DEMO.length], m: model }); save(); if (cur === chat) renderChat(); }, 1100);
+});
+renderList();

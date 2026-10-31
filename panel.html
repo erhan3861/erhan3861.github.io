@@ -53,6 +53,13 @@
     <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2 2 0 0 1 6 6.5h2l1.5-2h5L16 6.5h2a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.3"/></symbol>
     <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h3.5A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M10 8l-4 4 4 4M6 12h9"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m20 11.5-8.2 8.2a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6c1.1 1.7 2.3 2.7 4.3 2.7H21M18 14l3 3-3 3M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.1 3.6 8.5s-1.2 6.2-3.6 8.5c-2.4-2.3-3.6-5.1-3.6-8.5S9.6 5.8 12 3.5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
   </defs>
 </svg>
 
@@ -75,11 +82,6 @@
     <a class="side-more" href="#ekosistem" title="Ekosistemi keşfet">
       <svg class="icon" aria-hidden="true"><use href="#i-spark" /></svg>
       <span><strong>Ekosistemi keşfet</strong><span>Altı platform tek oturumda</span></span>
-      <svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg>
-    </a>
-    <a class="side-profile" href="#profil" data-nav="profil" title="Profil">
-      <span class="avatar" data-avatar>EY</span>
-      <span class="sp-text"><strong data-fullname>Elif Yılmaz</strong><span>Öğrenci · 7-A</span></span>
       <svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg>
     </a>
   </aside>
@@ -124,11 +126,6 @@
           <div class="head"><h2 id="acts-h">Son Aktiviteler</h2><a href="#projelerim">Tümünü Gör<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></div>
           <ul data-acts></ul>
         </section>
-        <a class="cup" href="#ekosistem">
-          <img src="assets/talentcup-mark.png" alt="" width="40" height="40">
-          <span><strong>Talent Cup 2026</strong><span>Yarışma ve proje programları</span></span>
-          <svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>
-        </a>
       </aside>
     </div>
 
@@ -312,16 +309,57 @@
   </div>
 </div>
 
-<!-- sohbet: sağ alttaki AI-LA işaretiyle açılır; yalnız yazı alanı -->
+<!-- sohbet: sağ alttaki AI-LA işareti tam sayfa sohbeti açar. AI Stüdyo'nun yalnız Metin sekmesi: metin modelleri + geçmiş, Keşfet yok -->
 <div class="chat" data-chat>
-  <div class="chat-pop" id="chat-pop" role="dialog" aria-label="AI-LA'ya yaz" data-chat-pop hidden>
-    <ol class="chat-log" aria-live="polite" data-chat-log></ol>
-    <form class="chat-form" data-chat-form>
-      <textarea rows="1" placeholder="AI-LA'ya bir şey sor…" aria-label="Mesaj" data-chat-input></textarea>
-      <button type="submit" class="chat-send" aria-label="Gönder" disabled data-chat-send><svg class="icon" aria-hidden="true"><use href="#i-send" /></svg></button>
+  <button type="button" class="chat-fab" aria-expanded="false" aria-controls="ai-chat" aria-label="AI-LA sohbet" data-chat-fab><img src="assets/aila-mark.png" alt="" width="30" height="30"></button>
+</div>
+<div class="ai-chat" id="ai-chat" role="dialog" aria-modal="true" aria-label="AI-LA sohbet" data-ai-chat hidden>
+  <aside class="ac-side" data-ac-side>
+    <div class="ac-side-head">
+      <span class="ac-side-ic"><svg class="icon" aria-hidden="true"><use href="#i-chat" /></svg></span>
+      <span><strong>Metin Geçmişi</strong><span data-ac-count>0 sohbet</span></span>
+      <button type="button" class="ac-ib" aria-label="Geçmişi gizle" data-ac-side-toggle><svg class="icon" aria-hidden="true"><use href="#i-sidebar" /></svg></button>
+    </div>
+    <button type="button" class="ac-new" data-ac-new><svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>Yeni Sohbet</button>
+    <div class="ac-list" data-ac-list></div>
+  </aside>
+  <section class="ac-main">
+    <header class="ac-top">
+      <button type="button" class="ac-ib ac-show-side" aria-label="Geçmişi göster" data-ac-side-toggle><svg class="icon" aria-hidden="true"><use href="#i-sidebar" /></svg></button>
+      <strong class="ac-title" data-ac-title>Yeni sohbet</strong>
+      <button type="button" class="ac-close" aria-label="Sohbeti kapat" data-ac-close><svg class="icon" aria-hidden="true"><use href="#i-x" /></svg></button>
+    </header>
+    <div class="ac-scroll" data-ac-scroll>
+      <div class="ac-hello" data-ac-hello>
+        <span class="ac-mascot"><img src="assets/aila-maskot.png" alt=""></span>
+        <h2>Merhaba! Ben AI-LA</h2>
+        <p>Sana nasıl yardımcı olabilirim?</p>
+        <div class="ac-sugs">
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-globe" /></svg></span>Kendi Dünyamı İnşa Et<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-layers" /></svg></span>Kendi Hikâyemin Kahramanı Olmak<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-code" /></svg></span>Kendi Video Oyunumu Yapmak İstiyorum<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-star" /></svg></span>Zorlandığım Dersleri Bir Süper Güce Dönüştür!<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+        </div>
+      </div>
+      <ol class="ac-log" aria-live="polite" data-ac-log></ol>
+    </div>
+    <form class="ac-composer" data-ac-form>
+      <textarea rows="2" placeholder="Bir şeyler yaz…" aria-label="Mesaj" data-ac-input></textarea>
+      <div class="ac-tools">
+        <button type="button" class="ac-ib" aria-label="Dosya ekle" data-ac-attach><svg class="icon" aria-hidden="true"><use href="#i-clip" /></svg></button>
+        <span class="ac-sep" aria-hidden="true"></span>
+        <div class="ac-model">
+          <button type="button" class="ac-model-btn" aria-haspopup="listbox" aria-expanded="false" data-ac-model-btn><img src="assets/aila-maskot.png" alt=""><span data-ac-model>Gemini 2.5 Flash Lite</span><svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></button>
+          <ul class="ac-model-list" role="listbox" aria-label="Metin modeli" data-ac-model-list hidden></ul>
+        </div>
+        <span class="ac-grow"></span>
+        <button type="button" class="ac-ib" aria-label="Sesle yaz" data-ac-mic><svg class="icon" aria-hidden="true"><use href="#i-mic" /></svg></button>
+        <button type="button" class="ac-ib" aria-label="Rastgele bir fikir" data-ac-shuffle><svg class="icon" aria-hidden="true"><use href="#i-shuffle" /></svg></button>
+        <button type="submit" class="ac-send" aria-label="Gönder" disabled data-ac-send><svg class="icon" aria-hidden="true"><use href="#i-send" /></svg></button>
+      </div>
     </form>
-  </div>
-  <button type="button" class="chat-fab" aria-expanded="false" aria-controls="chat-pop" aria-label="AI-LA asistanı" data-chat-fab><img src="assets/aila-mark.png" alt="" width="30" height="30"></button>
+    <p class="ac-note">AI-LA AI modelleri hata yapabilir. Bilgileri kontrol etmeyi unutma.</p>
+  </section>
 </div>
 </body>
 

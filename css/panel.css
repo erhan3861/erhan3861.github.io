@@ -561,7 +561,6 @@ html.text-l body { font-size: 16.5px; }
 .form-tile:hover .tile-art.mid { opacity: 1; transform: scale(1.04) rotate(-2deg); }
 .form-tile .tile-go { justify-self: stretch; justify-content: center; height: 44px; }
 /* hesap kartı: güvenlik + tercihler; altta saydam görsel */
-.pf-art.low { top: auto; bottom: 74px; right: 16px;   /* sağ alttaki sohbet düğmesinin üstünde kalsın */ width: clamp(110px, 17vh, 160px); height: clamp(110px, 17vh, 160px); opacity: .4; }
 .pf-account .btn-tile { margin-top: 2px; }
 .pf-sub { margin: clamp(12px, 2vh, 20px) 0 2px; font: 600 12px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
 .pf-sub + .tg { border-top: 0; }

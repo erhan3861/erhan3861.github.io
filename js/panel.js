@@ -172,8 +172,9 @@ const go = () => {
   view = VIEWS.includes(h) ? h : "ana";
   if (view === "gorev" && !renderTask($("[data-task]"), decodeURIComponent(arg || ""))) view = "ana";
   $$("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== view; });
+  document.body.dataset.view = view;
   $$("[data-nav]").forEach((a) => { if (a.dataset.nav === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-  const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : $(`[data-nav="${view}"]`).textContent.trim();
+  const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : $(`[data-nav="${view}"]`).textContent.trim();
   document.title = `${label} · AI-LA`;
   week.active(view === "ana");
   if (view === "kendini-tani") {
@@ -203,8 +204,6 @@ sideBtn.addEventListener("click", () => {
 });
 
 /* ---------- profil ---------- */
-// "Seni tanıyalım" formu sonraki aşamada hazırlanacak; adresi belli olunca buraya yazılır.
-const TANI_FORM_URL = null;
 
 const PF_TAGS = ["Uzay", "Çizim", "Kodlama", "Müzik", "Robotik", "Doğa", "Spor", "Hikâye yazma", "Film", "Matematik"];
 const pfOn = new Set(["Uzay", "Çizim"]);
@@ -239,16 +238,7 @@ $("[data-pf-form]").addEventListener("submit", (e) => {
   flash($("[data-pf-status]"), "Kaydedildi");   // demo: sunucuya gönderilmez
 });
 
-// form bağlantısı: adres yoksa bilgi verir
-const taniLink = $("[data-tani-link]");
-if (TANI_FORM_URL) taniLink.href = TANI_FORM_URL;
-taniLink.addEventListener("click", (e) => {
-  if (TANI_FORM_URL) return;
-  e.preventDefault();
-  const tx = taniLink.querySelector(".tile-go");
-  tx.firstChild.textContent = "Form çok yakında burada";
-  taniLink.classList.add("soon");
-});
+const taniLink = $("[data-tani-link]");   // formlar görünümüne gider; form bitince yazısı değişir
 
 // parola: ayrı pencerede, sayfa kaymaz
 const dlg = $("[data-pw-dlg]"), pwForm = $("[data-pf-pass-form]");
@@ -291,6 +281,76 @@ sizeSeg.addEventListener("click", (e) => {
   setSize(b.dataset.size);
   try { localStorage.setItem("aila-yazi", b.dataset.size); } catch (e2) { /* yok say */ }
 });
+
+/* ---------- formlar: Seni tanıyalım (adım adım, tek ekran) ----------
+   Görseller mevcut setten: assets/araclar/tNN.png ve assets/profil/pNN.png. Demo: cevaplar sunucuya gitmez. */
+const A = (n) => `assets/araclar/t${String(n).padStart(2, "0")}.png`, P = (n) => `assets/profil/p${String(n).padStart(2, "0")}.png`;
+const TANI_STEPS = [
+  { id: "merhaba", art: "assets/profil/p05a.png", title: "Merhaba! Seni biraz tanıyalım.", text: "Birkaç kısa soru. Doğru ya da yanlış cevap yok; seçtiklerin araçları ve görevleri sana göre ayarlar.", next: "Başlayalım" },
+  { id: "ilgi", art: A(1), title: "En çok neyle uğraşmayı seversin?", text: "En çok 3 tane seç.", max: 3, opts: [
+    ["Resim ve görsel", A(1)], ["Video ve film", A(2)], ["Müzik", A(4)], ["Kodlama", A(5)],
+    ["3D tasarım", A(6)], ["Hikâye ve sunum", A(11)], ["Robotlar", A(7)], ["Bulmaca ve sorular", A(15)]] },
+  { id: "ogrenme", art: A(3), title: "En iyi nasıl öğrenirsin?", text: "Sana en yakın olanı seç.", max: 1, opts: [
+    ["İzleyerek", A(2)], ["Okuyarak", A(12)], ["Yaparak, deneyerek", A(5)], ["Konuşarak, sorarak", A(3)], ["Dinleyerek", A(13)], ["Adım adım ilerleyerek", A(16)]] },
+  { id: "hedef", art: P(8), title: "Bu dönem neyi başarmak istersin?", text: "İstediğin kadar seçebilirsin.", max: 4, opts: [
+    ["Yeni bir şey öğrenmek", A(16)], ["Kendi projemi yapmak", A(8)], ["Yarışmaya katılmak", P(8)], ["Derslerimi güçlendirmek", A(15)]] },
+  { id: "cumle", art: P(1), title: "Kendini bir cümleyle anlatır mısın?", text: "Örneğin: “Bir şeyleri çizmeyi ve nasıl çalıştığını merak etmeyi severim.”", input: true },
+  { id: "bitti", art: P(8), title: "Harika, seni tanıdık!", text: "Cevaplarını kaydettik. Öneriler ve görevler bundan sonra sana göre gelecek.", next: "Profile dön", done: true },
+];
+const tani = { i: 0, picks: {}, note: "" };
+const taniStep = $("[data-tani-step]"), taniDots = $("[data-tani-dots]"), taniArt = $("[data-tani-art]");
+const taniNext = $("[data-tani-next]"), taniPrev = $("[data-tani-prev]"), taniSkip = $("[data-tani-skip]"), taniHint = $("[data-tani-hint]");
+taniDots.innerHTML = TANI_STEPS.map((s, i) => `<li><button type="button" aria-label="Adım ${i + 1}" data-go="${i}">${i + 1}</button></li>`).join("");
+const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const renderTani = (dir = 0) => {
+  const s = TANI_STEPS[tani.i], picked = tani.picks[s.id] || [];
+  let body = `<h2>${s.title}</h2><p class="tani-text">${s.text}</p>`;
+  if (s.opts) body += `<div class="tani-opts${s.opts.length > 6 ? " many" : ""}" role="group" aria-label="${s.title}">${s.opts.map(([t, img]) =>
+    `<button type="button" class="opt" aria-pressed="${picked.includes(t)}" data-opt="${esc(t)}"><span class="opt-img"><img src="${img}" alt=""></span><span class="opt-t">${t}</span><span class="opt-check" aria-hidden="true"><svg class="icon"><use href="#i-check" /></svg></span></button>`).join("")}</div>`;
+  if (s.input) body += `<label class="tani-input"><textarea rows="3" maxlength="140" placeholder="Buraya yaz…" data-tani-note>${esc(tani.note)}</textarea><em data-tani-left>${140 - tani.note.length}</em></label>`;
+  if (s.done) body += `<div class="tani-sum">${Object.values(tani.picks).flat().map((t) => `<span>${t}</span>`).join("") || "<span>Seçim yapmadın, sorun değil</span>"}</div>`;
+  taniStep.innerHTML = body;
+  taniStep.classList.remove("in-l", "in-r"); void taniStep.offsetWidth;
+  if (dir) taniStep.classList.add(dir > 0 ? "in-r" : "in-l");
+  taniArt.classList.remove("pop"); void taniArt.offsetWidth; taniArt.classList.add("pop");
+  taniArt.src = s.art;
+  $("[data-tani-count]").textContent = `${tani.i + 1} / ${TANI_STEPS.length}`;
+  $$("button", taniDots).forEach((b, i) => {
+    b.classList.toggle("done", i < tani.i); b.classList.toggle("now", i === tani.i);
+    if (i === tani.i) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+    b.disabled = i > tani.i;
+  });
+  taniPrev.hidden = tani.i === 0 || s.done;
+  taniSkip.hidden = !s.opts && !s.input;
+  $("[data-tani-next-label]").textContent = s.next || (tani.i === TANI_STEPS.length - 2 ? "Bitir" : "Devam");
+  taniHint.textContent = s.max > 1 ? `${picked.length} / ${s.max} seçildi` : "";
+  const note = $("[data-tani-note]");
+  if (note) note.addEventListener("input", () => { tani.note = note.value; $("[data-tani-left]").textContent = 140 - note.value.length; });
+};
+const taniGo = (to) => { const d = Math.sign(to - tani.i); tani.i = Math.max(0, Math.min(TANI_STEPS.length - 1, to)); renderTani(d); };
+taniStep.addEventListener("click", (e) => {
+  const b = e.target.closest(".opt"); if (!b) return;
+  const s = TANI_STEPS[tani.i], list = tani.picks[s.id] || (tani.picks[s.id] = []), t = b.dataset.opt;
+  if (s.max === 1) { list.length = 0; list.push(t); $$(".opt", taniStep).forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }
+  else if (list.includes(t)) { list.splice(list.indexOf(t), 1); b.setAttribute("aria-pressed", "false"); }
+  else if (list.length < s.max) { list.push(t); b.setAttribute("aria-pressed", "true"); }
+  else { taniHint.textContent = `En çok ${s.max} tane seçebilirsin`; b.classList.remove("nope"); void b.offsetWidth; b.classList.add("nope"); return; }
+  taniHint.textContent = s.max > 1 ? `${list.length} / ${s.max} seçildi` : "";
+});
+$("[data-tani-form]").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (TANI_STEPS[tani.i].done) { location.hash = "profil"; return; }
+  taniGo(tani.i + 1);
+  if (TANI_STEPS[tani.i].done) {   // profildeki kart artık tamamlandı der
+    taniLink.querySelector(".tile-eyebrow").textContent = "Tamamlandı";
+    taniLink.querySelector(".tile-go").firstChild.textContent = "Cevaplarını gör";
+  }
+});
+taniPrev.addEventListener("click", () => taniGo(tani.i - 1));
+taniSkip.addEventListener("click", () => taniGo(tani.i + 1));
+taniDots.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b && !b.disabled) taniGo(+b.dataset.go); });
+renderTani();
 
 /* ---------- sohbet: sağ alttaki işaret; yalnız yazı alanı, demo yanıtlar ---------- */
 const fab = $("[data-chat-fab]"), pop = $("[data-chat-pop]"), log = $("[data-chat-log]");

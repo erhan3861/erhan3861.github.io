@@ -202,6 +202,31 @@
       </div>
     </section>
 
+    <!-- formlar: profildeki "Seni tanıyalım" kartından açılır. Tek ekran; adımlar yana kayar (js: TANI_STEPS) -->
+    <section class="view page tani" data-view="formlar" aria-labelledby="tani-h" hidden>
+      <header class="tani-top">
+        <a class="tani-back" href="#profil"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Profil</a>
+        <div class="tani-title"><h1 id="tani-h">Seni tanıyalım</h1><span>Yaklaşık 3 dakika · cevapların yalnız öğretmeninle paylaşılır</span></div>
+        <ol class="tani-dots" aria-label="Adımlar" data-tani-dots></ol>
+      </header>
+      <div class="tani-card">
+        <div class="tani-art" aria-hidden="true">
+          <span class="tani-blob b1"></span><span class="tani-blob b2"></span>
+          <img src="assets/profil/p05a.png" alt="" data-tani-art>
+          <span class="tani-count" data-tani-count>1 / 6</span>
+        </div>
+        <form class="tani-body" data-tani-form novalidate>
+          <div class="tani-step" data-tani-step aria-live="polite"></div>
+          <div class="tani-nav">
+            <button type="button" class="round-btn" aria-label="Geri" data-tani-prev><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+            <span class="tani-hint" data-tani-hint></span>
+            <button type="button" class="tani-skip" data-tani-skip>Atla</button>
+            <button type="submit" class="tani-next" data-tani-next><span data-tani-next-label>Başlayalım</span><span class="tani-next-ic"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <!-- profil: sol alttaki profil sekmesinden ve üst sağdaki addan açılır. Masaüstünde tek ekran, kaydırma yok. -->
     <section class="view page profile" data-view="profil" aria-labelledby="pf-h" hidden>
       <div class="pf-cover">
@@ -237,9 +262,9 @@
         </form>
 
         <div class="pf-col one">
-          <!-- Seni tanıyalım formu sonraki aşamada buraya bağlanacak; şimdilik yalnız bağlantı (js: TANI_FORM_URL) -->
-          <a class="pf-tile form-tile" href="#" data-tani-link>
-            <span class="tile-eyebrow">Yakında</span>
+          <!-- Seni tanıyalım: #formlar görünümünü açar -->
+          <a class="pf-tile form-tile" href="#formlar" data-tani-link>
+            <span class="tile-eyebrow">3 dakika</span>
             <strong>Seni tanıyalım formu</strong>
             <span class="tile-text">İlgi alanların, öğrenme biçimin ve hedeflerin. Doldurduğunda araçlar sana göre ayarlanır.</span>
             <img class="tile-art mid" src="assets/profil/p05a.png" alt="" onerror="this.remove()">

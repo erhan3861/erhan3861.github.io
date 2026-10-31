@@ -433,13 +433,32 @@ img, svg { display: block; }
 /* avatar degradesi (sol alttaki profil sekmesi kaldırıldı; profil üst sağdaki addan açılır) */
 .avatar { background: linear-gradient(135deg, var(--av, var(--s)), var(--v)); }
 
+/* profil avatarı: kamera düğmesi + menü (fotoğraf yükle, hazır avatar, kaldır) */
+.avatar.has-img { background-size: cover; background-position: center; color: transparent; }
+.pf-cam { position: absolute; right: -6px; bottom: -4px; display: grid; place-items: center; width: 30px; height: 30px; border: 3px solid var(--s); border-radius: 50%; background: #fff; color: var(--s-ink); cursor: pointer; transition: transform .2s var(--ease); }
+.pf-cam:hover { transform: scale(1.1); }
+.pf-cam .icon { width: 14px; height: 14px; }
+.av-menu { position: absolute; z-index: 5; left: 0; top: calc(100% + 10px); display: grid; gap: 4px; width: 230px; padding: 8px; border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 24px 48px -18px rgba(20, 30, 90, .45); animation: chat-in .22s var(--ease); }
+.av-menu[hidden] { display: none; }
+.av-menu > button { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 10px; border: 0; border-radius: 10px; background: none; font: inherit; font-size: 14px; font-weight: 500; color: var(--ink); text-align: left; cursor: pointer; }
+.av-menu > button:hover { background: #f2f3fa; }
+.av-menu > button .icon { width: 17px; height: 17px; color: var(--s); }
+.av-menu .av-remove { color: #c2392f; }
+.av-menu .av-remove .icon { color: #c2392f; }
+.av-presets { display: flex; gap: 8px; padding: 6px 10px 8px; border-bottom: 1px solid var(--line); margin-bottom: 2px; }
+.av-presets button { width: 48px; height: 48px; padding: 0; border: 2px solid transparent; border-radius: 50%; background: #f2f3fa; cursor: pointer; overflow: hidden; transition: border-color .2s, transform .2s var(--ease); }
+.av-presets button:hover { border-color: var(--s); transform: scale(1.06); }
+.av-presets img { width: 100%; height: 100%; object-fit: cover; }
+.av-presets button:last-child img { object-fit: contain; padding: 4px; }
+
 /* ---------- profil sayfası: masaüstünde tek ekran, kaydırma yok ----------
    Kapak + üç sütun (bilgiler | form bağlantısı ve güvenlik | tercihler). Parola ayrı pencerede.
    Görseller (assets/profil/pNN.png) araç kartlarıyla aynı aile: beyaz zemin, multiply ile saydam. */
 .page.profile { grid-template-rows: auto minmax(0, 1fr); align-content: stretch; overflow: hidden; gap: clamp(12px, 1.8vh, 18px); }
-.pf-cover { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: clamp(14px, 2vh, 20px) 26px; border-radius: 22px; color: #fff; overflow: hidden;
+.pf-cover { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: clamp(14px, 2vh, 20px) 26px; border-radius: 22px; color: #fff; overflow: visible; isolation: isolate;
   background: radial-gradient(90% 140% at 100% 0%, color-mix(in oklab, var(--v) 70%, transparent), transparent 60%), linear-gradient(120deg, var(--s-ink), var(--s) 55%, var(--v)); box-shadow: 0 24px 50px -30px color-mix(in oklab, var(--s) 70%, transparent); }
-.pf-cover::after { content: ""; position: absolute; right: -60px; bottom: -140px; width: 320px; height: 320px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .18); box-shadow: 0 0 0 40px rgba(255, 255, 255, .04), 0 0 0 90px rgba(255, 255, 255, .03); pointer-events: none; }
+.pf-cover::after { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: inherit; pointer-events: none;   /* halkalar band içinde: kapak taşmaya açık (avatar menüsü) */
+  background: radial-gradient(circle at calc(100% - 100px) calc(100% + 20px), transparent 0 158px, rgba(255, 255, 255, .18) 159px 160px, rgba(255, 255, 255, .05) 161px 200px, rgba(255, 255, 255, .03) 201px 250px, transparent 251px); }
 .pf-id { display: flex; align-items: center; gap: 18px; }
 .pf-avatar-wrap { position: relative; }
 .avatar.xl { width: clamp(60px, 8vh, 76px); height: clamp(60px, 8vh, 76px); font: 800 26px/1 var(--display); letter-spacing: -0.02em; border: 3px solid rgba(255, 255, 255, .9); box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .35); }
@@ -734,8 +753,12 @@ body[data-page="formlar"] .chat { display: none; }
 .ac-scroll { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 .ac-hello { display: grid; justify-items: center; align-content: center; min-height: 100%; padding: 12px 0 20px; text-align: center; }
 .ac-hello[hidden] { display: none; }
-.ac-mascot { position: relative; display: grid; place-items: center; width: clamp(130px, 20vh, 180px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #fff 30%, rgba(255, 255, 255, 0) 70%); }
-.ac-mascot img { width: 78%; animation: float 4s ease-in-out infinite; filter: drop-shadow(0 16px 20px rgba(80, 60, 200, .22)); }
+/* fareyi takip eden kedi (js/kedi.js); yüklenemezse yüz resmi görünür */
+.ac-mascot { position: relative; display: grid; place-items: center; width: clamp(170px, 27vh, 250px); aspect-ratio: 1; }
+.ac-mascot canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ac-mascot .cat-fallback { display: none; width: 70%; border-radius: 50%; }
+.ac-mascot.cat-fail .cat-fallback { display: block; }
+
 @keyframes float { 50% { transform: translateY(-8px); } }
 .ac-hello h2 { margin-top: 10px; font: 800 clamp(1.8rem, 1.2rem + 1.6vw, 2.6rem)/1.1 var(--display); letter-spacing: -0.03em; background: linear-gradient(90deg, #8a6cf0, #c06ae0, #8a6cf0); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ac-hello > p { margin-top: 8px; font-size: 16px; color: var(--s); }
@@ -750,7 +773,7 @@ body[data-page="formlar"] .chat { display: none; }
 .ac-log { display: grid; gap: 18px; width: min(860px, 100%); margin: 0 auto; padding: 16px 0 24px; list-style: none; }
 .ac-msg.me { justify-self: end; max-width: 78%; padding: 12px 16px; border-radius: 20px 20px 6px 20px; background: var(--s); color: #fff; font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
 .ac-msg.ai { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; max-width: 92%; }
-.ac-av { width: 36px; height: 36px; object-fit: contain; margin-top: 2px; }
+.ac-av { width: 36px; height: 36px; object-fit: cover; margin-top: 2px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 4px 10px -4px rgba(80, 60, 200, .35); }
 .ac-who { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: var(--ink-3); }
 .ac-msg.ai p { padding: 12px 16px; border-radius: 6px 20px 20px 20px; background: #fff; box-shadow: 0 1px 2px rgba(17, 20, 44, .04); font-size: 15px; line-height: 1.6; color: var(--ink); }
 .ac-typing { display: inline-flex !important; gap: 5px; }
@@ -767,7 +790,7 @@ body[data-page="formlar"] .chat { display: none; }
 .ac-model { position: relative; }
 .ac-model-btn { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px 0 10px; border: 0; border-radius: 14px; background: #f4f5fb; font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .2s; }
 .ac-model-btn:hover { background: var(--s-tint); }
-.ac-model-btn img { width: 28px; height: 28px; object-fit: contain; }
+.ac-model-btn img { width: 28px; height: 28px; object-fit: cover; border-radius: 50%; }
 .ac-model-btn .icon { width: 16px; height: 16px; color: var(--ink-3); }
 .ac-model-list { position: absolute; left: 0; bottom: calc(100% + 8px); min-width: 240px; padding: 6px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 24px 48px -20px rgba(30, 40, 110, .35); }
 .ac-model-list[hidden] { display: none; }

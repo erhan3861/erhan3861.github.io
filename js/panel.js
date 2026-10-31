@@ -1,6 +1,7 @@
 // AI-LA paneli (login sonrası). Renk: panel.html?renk=turkuaz|mor|turuncu|deniz (varsayılan mavi). Rol login'den gelir; demoda ?rol=ogretmen|yonetici
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountWeek, renderTask } from "./week.js";
+import { mountCat } from "./kedi.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -240,6 +241,37 @@ $("[data-pf-form]").addEventListener("submit", (e) => {
 
 const taniLink = $("[data-tani-link]");   // formlar görünümüne gider; form bitince yazısı değişir
 
+// profil avatarı: fotoğraf yükle (kare kırpılır, 256 px'e küçülür) ya da hazır avatar; bu tarayıcıda saklanır
+const avBtn = $("[data-av-btn]"), avMenu = $("[data-av-menu]"), avFile = $("[data-av-file]");
+const applyAvatar = (src) => $$("[data-avatar]").forEach((el) => {
+  el.classList.toggle("has-img", !!src);
+  el.style.backgroundImage = src ? `url("${src}")` : "";
+});
+const storeAvatar = (src) => { try { if (src) localStorage.setItem("aila-avatar", src); else localStorage.removeItem("aila-avatar"); } catch (e) { /* depolama kapalı */ } };
+try { applyAvatar(localStorage.getItem("aila-avatar")); } catch (e) { /* yok say */ }
+const avOpen = (open) => { avMenu.hidden = !open; avBtn.setAttribute("aria-expanded", String(open)); };
+avBtn.addEventListener("click", (e) => { e.stopPropagation(); avOpen(avMenu.hidden); });
+document.addEventListener("click", (e) => { if (!e.target.closest(".pf-avatar-wrap")) avOpen(false); });
+avMenu.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-av]"); if (!b) return;
+  const v = b.dataset.av;
+  if (v === "upload") { avFile.click(); return; }
+  const src = v === "remove" ? null : v;
+  applyAvatar(src); storeAvatar(src); avOpen(false);
+});
+avFile.addEventListener("change", () => {
+  const f = avFile.files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const n = 256, side = Math.min(img.width, img.height), c = document.createElement("canvas");
+    c.width = c.height = n;
+    c.getContext("2d").drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, n, n);
+    const src = c.toDataURL("image/jpeg", .86);
+    applyAvatar(src); storeAvatar(src); avOpen(false); URL.revokeObjectURL(img.src); avFile.value = "";
+  };
+  img.src = URL.createObjectURL(f);
+});
+
 // parola: ayrı pencerede, sayfa kaymaz
 const dlg = $("[data-pw-dlg]"), pwForm = $("[data-pf-pass-form]");
 const pwNew = $("[data-pw-new]"), pwMeter = $("[data-pw-meter]"), pwTip = $("[data-pw-tip]");
@@ -394,9 +426,12 @@ const renderList = () => {
   acList.innerHTML = html;
 };
 const msgHtml = (m) => m.r === "me" ? `<li class="ac-msg me">${esc(m.t)}</li>`
-  : `<li class="ac-msg ai"><img class="ac-av" src="assets/aila-maskot.png" alt=""><div><span class="ac-who">AI-LA · ${esc(m.m || model)}</span><p>${esc(m.t).replace(/\n/g, "<br>")}</p></div></li>`;
+  : `<li class="ac-msg ai"><img class="ac-av" src="assets/kedi-yuz.png" alt=""><div><span class="ac-who">AI-LA · ${esc(m.m || model)}</span><p>${esc(m.t).replace(/\n/g, "<br>")}</p></div></li>`;
+const kedi = mountCat($("[data-ac-cat]"));
+const syncCat = () => { if (!ac.hidden && !acHello.hidden) kedi.start(); else kedi.stop(); };
 const renderChat = () => {
   acHello.hidden = !!(cur && cur.msgs.length);
+  syncCat();
   acLog.innerHTML = cur ? cur.msgs.map(msgHtml).join("") : "";
   $("[data-ac-title]").textContent = cur ? cur.title : "Yeni sohbet";
   acScroll.scrollTop = acScroll.scrollHeight;
@@ -406,7 +441,7 @@ const newChat = () => { cur = null; renderChat(); acInput.focus(); };
 const openAc = (open) => {
   ac.hidden = !open; acFab.setAttribute("aria-expanded", String(open));
   document.body.classList.toggle("chat-full", open);   // .ac-open değil: o geçmiş satırının sınıfı, body'ye de uyar
-  if (open) { renderChat(); acInput.focus(); } else acFab.focus();
+  if (open) { renderChat(); acInput.focus(); } else { kedi.stop(); acFab.focus(); }
 };
 acFab.addEventListener("click", () => openAc(true));
 $("[data-ac-close]").addEventListener("click", () => openAc(false));
@@ -447,7 +482,7 @@ $("[data-ac-form]").addEventListener("submit", (e) => {
   cur.msgs.push({ r: "me", t }); cur.ts = Date.now();
   chats = [cur, ...chats.filter((c) => c !== cur)];
   acInput.value = ""; acGrow(); save(); renderChat();
-  const wait = document.createElement("li"); wait.className = "ac-msg ai"; wait.innerHTML = `<img class="ac-av" src="assets/aila-maskot.png" alt=""><div><span class="ac-who">AI-LA · ${esc(model)}</span><p class="ac-typing"><i></i><i></i><i></i></p></div>`;
+  const wait = document.createElement("li"); wait.className = "ac-msg ai"; wait.innerHTML = `<img class="ac-av" src="assets/kedi-yuz.png" alt=""><div><span class="ac-who">AI-LA · ${esc(model)}</span><p class="ac-typing"><i></i><i></i><i></i></p></div>`;
   acLog.append(wait); acScroll.scrollTop = acScroll.scrollHeight;
   const chat = cur;
   setTimeout(() => { chat.msgs.push({ r: "ai", t: DEMO[demoI++ % DEMO.length], m: model }); save(); if (cur === chat) renderChat(); }, 1100);

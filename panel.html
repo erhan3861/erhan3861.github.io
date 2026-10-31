@@ -230,6 +230,16 @@
         <div class="pf-id">
           <div class="pf-avatar-wrap">
             <span class="avatar xl" data-avatar>EY</span>
+            <button type="button" class="pf-cam" aria-label="Avatarı değiştir" aria-haspopup="menu" aria-expanded="false" data-av-btn><svg class="icon" aria-hidden="true"><use href="#i-camera" /></svg></button>
+            <div class="av-menu" role="menu" data-av-menu hidden>
+              <button type="button" role="menuitem" data-av="upload"><svg class="icon" aria-hidden="true"><use href="#i-camera" /></svg>Fotoğraf yükle</button>
+              <div class="av-presets" aria-label="Hazır avatarlar">
+                <button type="button" role="menuitem" aria-label="Kedi avatarı" data-av="assets/kedi-yuz.png"><img src="assets/kedi-yuz.png" alt=""></button>
+                <button type="button" role="menuitem" aria-label="AI-LA avatarı" data-av="assets/aila-maskot.png"><img src="assets/aila-maskot.png" alt=""></button>
+              </div>
+              <button type="button" role="menuitem" class="av-remove" data-av="remove"><svg class="icon" aria-hidden="true"><use href="#i-trash" /></svg>Kaldır, baş harfler kalsın</button>
+            </div>
+            <input type="file" accept="image/*" hidden data-av-file>
           </div>
           <div class="pf-name">
             <h1 id="pf-h" data-fullname>Elif Yılmaz</h1>
@@ -329,7 +339,7 @@
     </header>
     <div class="ac-scroll" data-ac-scroll>
       <div class="ac-hello" data-ac-hello>
-        <span class="ac-mascot"><img src="assets/aila-maskot.png" alt=""></span>
+        <span class="ac-mascot" data-ac-cat><img class="cat-fallback" src="assets/kedi-yuz.png" alt=""></span>
         <h2>Merhaba! Ben AI-LA</h2>
         <p>Sana nasıl yardımcı olabilirim?</p>
         <div class="ac-sugs">
@@ -347,7 +357,7 @@
         <button type="button" class="ac-ib" aria-label="Dosya ekle" data-ac-attach><svg class="icon" aria-hidden="true"><use href="#i-clip" /></svg></button>
         <span class="ac-sep" aria-hidden="true"></span>
         <div class="ac-model">
-          <button type="button" class="ac-model-btn" aria-haspopup="listbox" aria-expanded="false" data-ac-model-btn><img src="assets/aila-maskot.png" alt=""><span data-ac-model>Gemini 2.5 Flash Lite</span><svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></button>
+          <button type="button" class="ac-model-btn" aria-haspopup="listbox" aria-expanded="false" data-ac-model-btn><img src="assets/kedi-yuz.png" alt=""><span data-ac-model>Gemini 2.5 Flash Lite</span><svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></button>
           <ul class="ac-model-list" role="listbox" aria-label="Metin modeli" data-ac-model-list hidden></ul>
         </div>
         <span class="ac-grow"></span>

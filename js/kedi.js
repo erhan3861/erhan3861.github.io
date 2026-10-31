@@ -8,11 +8,18 @@ export function mountCat(host, dir = "assets/kedi") {
   const ctx = canvas.getContext("2d");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
-  let S, base, sheet, tile, tctx, rest, idle, pos = 0, target = 0, lastT = 0, pointer = null, raf = 0, size = 0, dpr = 1;
+  let S, base, sheet, tile, tctx, mask, rest, idle, pos = 0, target = 0, lastT = 0, pointer = null, raf = 0, size = 0, dpr = 1;
 
   const ready = Promise.all([fetch(`${dir}/sprite.json`).then((r) => r.json()), load(`${dir}/base.jpg`), load(`${dir}/sheet.webp`)]).then(([s, b, sh]) => {
     S = s; base = b; sheet = sh;
     tile = document.createElement("canvas"); tile.width = S.cropW; tile.height = S.cropH; tctx = tile.getContext("2d");
+    // hareketli kutunun kenarları yumuşak: altındaki tam zemine dikişsiz biner (hero sitesindeki maske)
+    mask = document.createElement("canvas"); mask.width = S.cropW; mask.height = S.cropH;
+    const m = mask.getContext("2d"), F = 26;
+    m.fillStyle = "#000"; m.fillRect(0, 0, S.cropW, S.cropH); m.globalCompositeOperation = "destination-out";
+    const edge = (x0, y0, x1, y1, rx, ry, rw, rh) => { const g = m.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)"); m.fillStyle = g; m.fillRect(rx, ry, rw, rh); };
+    edge(0, 0, F, 0, 0, 0, F, S.cropH); edge(S.cropW, 0, S.cropW - F, 0, S.cropW - F, 0, F, S.cropH);
+    edge(0, 0, 0, F, 0, 0, S.cropW, F); edge(0, S.cropH, 0, S.cropH - F, 0, S.cropH - F, S.cropW, F);
     rest = S.gaze.map((g, f) => !S.gaze.slice(Math.max(0, f - 3), f + 4).some((x) => x[2]));   // göz kırpmayan kareler
     idle = []; S.gaze.forEach((g, f) => { if (rest[f] && Math.hypot(g[0], g[1]) < 0.15) idle.push(f); });
     if (!idle.length) idle = [0];
@@ -34,16 +41,19 @@ export function mountCat(host, dir = "assets/kedi") {
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, size, size);
     ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(base, S.cropX, S.cropY, S.cropW, S.cropH, ox, oy, S.cropW * s, S.cropH * s);
+    // zemin: kırpım değil videonun tam karesi; kutunun dışı da dolu, dikdörtgen kenar oluşmaz
+    ctx.drawImage(base, ox - S.cropX * s, oy - S.cropY * s, S.videoW * s, S.videoH * s);
     const p = pos / S.stride, a = Math.floor(p), b = Math.min(S.frames - 1, a + 1), t = p - a;
     tctx.clearRect(0, 0, S.cropW, S.cropH);
     const put = (i, al) => { tctx.globalAlpha = al; tctx.drawImage(sheet, (i % S.cols) * S.frameW, Math.floor(i / S.cols) * S.frameH, S.frameW, S.frameH, 0, 0, S.cropW, S.cropH); };
     put(a, 1); if (t > .01 && b !== a) put(b, t); tctx.globalAlpha = 1;
+    tctx.globalCompositeOperation = "destination-in"; tctx.drawImage(mask, 0, 0); tctx.globalCompositeOperation = "source-over";
     ctx.drawImage(tile, ox, oy, S.cropW * s, S.cropH * s);
     // yuvarlak yumuşak kenar: zemin rengi sohbetin açık lavantasına karışır
     ctx.globalCompositeOperation = "destination-in";
-    const g = ctx.createRadialGradient(size / 2, size / 2, size * .4, size / 2, size / 2, size / 2);   // geçiş kenarda: kedi soluklaşmasın
-    g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+    // uzun ve yumuşak geçiş: zemin kenara doğru yavaşça kaybolur, çizgi görünmez
+    const g = ctx.createRadialGradient(size / 2, size * .52, size * .2, size / 2, size * .52, size / 2);
+    [[0, 1], [.35, .92], [.6, .6], [.8, .25], [1, 0]].forEach(([o, a]) => g.addColorStop(o, `rgba(0,0,0,${a})`));
     ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
   };
 

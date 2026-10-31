@@ -685,7 +685,7 @@ html.text-l body { font-size: 16.5px; }
 .tani-next-ic .icon { width: 18px; height: 18px; }
 
 /* formda sağ alttaki sohbet düğmesi Devam'ın üstüne biner */
-body[data-view="formlar"] .chat { display: none; }
+body[data-page="formlar"] .chat { display: none; }
 
 @media (max-height: 700px), (max-width: 1080px) {
   .page.tani { overflow-y: auto; grid-template-rows: none; }

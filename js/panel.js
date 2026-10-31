@@ -172,7 +172,7 @@ const go = () => {
   view = VIEWS.includes(h) ? h : "ana";
   if (view === "gorev" && !renderTask($("[data-task]"), decodeURIComponent(arg || ""))) view = "ana";
   $$("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== view; });
-  document.body.dataset.view = view;
+  document.body.dataset.page = view;   // data-view değil: [data-view] seçicisi body'yi de görünüm sanıp gizler
   $$("[data-nav]").forEach((a) => { if (a.dataset.nav === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : $(`[data-nav="${view}"]`).textContent.trim();
   document.title = `${label} · AI-LA`;

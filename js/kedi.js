@@ -25,7 +25,8 @@ export function mountCat(host, dir = "assets/kedi") {
     size = host.clientWidth;
     canvas.width = canvas.height = Math.round(size * dpr);
   };
-  const box = () => { const s = size / Math.max(S.cropW, S.cropH) * 1.05; return { s, ox: (size - S.cropW * s) / 2, oy: (size - S.cropH * s) / 2 + size * .03 }; };
+  // kulak uçları dahil kedinin tamamı yuvarlağın içinde kalsın (1.05 ve aşağı kaydırma kulakları kesiyordu)
+  const box = () => { const s = size / Math.max(S.cropW, S.cropH) * .86; return { s, ox: (size - S.cropW * s) / 2, oy: (size - S.cropH * s) / 2 }; };
 
   const draw = () => {
     const { s, ox, oy } = box();

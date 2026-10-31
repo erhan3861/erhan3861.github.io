@@ -751,10 +751,14 @@ body[data-page="formlar"] .chat { display: none; }
 .ac-close { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--ink-2); cursor: pointer; transition: background .2s, color .2s, transform .2s var(--ease); }
 .ac-close:hover { background: var(--ink); color: #fff; transform: rotate(90deg); }
 .ac-scroll { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
-.ac-hello { display: grid; justify-items: center; align-content: center; min-height: 100%; padding: 12px 0 20px; text-align: center; }
+.ac-hello { display: grid; justify-items: center; align-content: center; height: 100%; padding: 4px 0 12px; text-align: center; overflow: hidden; }
+/* karşılama ekranında kaydırma yok: içerik yüksekliğe göre küçülür */
+.ac-scroll:has(.ac-hello:not([hidden])) { overflow: hidden; }
+.ac-log:empty { display: none; }   /* boş listenin iç boşluğu karşılamayı 40px taşırıyordu */
 .ac-hello[hidden] { display: none; }
 /* fareyi takip eden kedi (js/kedi.js); yüklenemezse yüz resmi görünür */
-.ac-mascot { position: relative; display: grid; place-items: center; width: clamp(170px, 27vh, 250px); aspect-ratio: 1; }
+/* kedi boyu, karşılamanın geri kalanı (~540px) sığdıktan sonra kalan yükseklik: kısa ekranda küçülür, kesilmez */
+.ac-mascot { position: relative; flex: none; display: grid; place-items: center; width: clamp(96px, calc(100vh - 500px), 260px); aspect-ratio: 1; }
 .ac-mascot canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ac-mascot .cat-fallback { display: none; width: 70%; border-radius: 50%; }
 .ac-mascot.cat-fail .cat-fallback { display: block; }
@@ -762,8 +766,8 @@ body[data-page="formlar"] .chat { display: none; }
 @keyframes float { 50% { transform: translateY(-8px); } }
 .ac-hello h2 { margin-top: 10px; font: 800 clamp(1.8rem, 1.2rem + 1.6vw, 2.6rem)/1.1 var(--display); letter-spacing: -0.03em; background: linear-gradient(90deg, #8a6cf0, #c06ae0, #8a6cf0); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ac-hello > p { margin-top: 8px; font-size: 16px; color: var(--s); }
-.ac-sugs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: min(1120px, 100%); margin-top: clamp(20px, 3.4vh, 36px); }
-.ac-sug { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; min-height: 64px; padding: 12px 18px 12px 14px; border: 1px solid rgba(17, 20, 44, .05); border-radius: 18px; background: rgba(255, 255, 255, .85); font: inherit; font-size: 15px; font-weight: 500; color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 1px 2px rgba(17, 20, 44, .03); transition: transform .25s var(--ease), box-shadow .25s, background .2s; }
+.ac-sugs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(8px, 1.2vh, 12px); width: min(1120px, 100%); margin-top: clamp(12px, 3vh, 32px); }
+.ac-sug { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; min-height: clamp(50px, 7vh, 64px); padding: 12px 18px 12px 14px; border: 1px solid rgba(17, 20, 44, .05); border-radius: 18px; background: rgba(255, 255, 255, .85); font: inherit; font-size: 15px; font-weight: 500; color: var(--ink); text-align: left; cursor: pointer; box-shadow: 0 1px 2px rgba(17, 20, 44, .03); transition: transform .25s var(--ease), box-shadow .25s, background .2s; }
 .ac-sug:hover { transform: translateY(-2px); background: #fff; box-shadow: 0 16px 30px -20px rgba(40, 50, 120, .35); }
 .ac-sug-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--s-tint); color: var(--s); }
 .ac-sug-ic .icon { width: 18px; height: 18px; }

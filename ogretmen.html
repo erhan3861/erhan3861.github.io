@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/panel.css" />
   <link rel="stylesheet" href="css/ogretmen.css" />
+  <link rel="stylesheet" href="css/ajanlar.css" />
   <link rel="stylesheet" href="css/koleksiyon.css" />
   <link rel="stylesheet" href="css/toolform.css" />
   <script type="module" src="js/ogretmen.js"></script>
@@ -85,6 +86,8 @@
     <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
   </defs>
 </svg>
 
@@ -268,12 +271,35 @@
     <!-- araç formu: #arac/<id>; içerik js/toolform.js ile kurulur -->
     <section class="view page tf" data-view="arac" aria-labelledby="tf-h" hidden></section>
 
-    <!-- ajanlar -->
-    <section class="view page" data-view="ajanlar" aria-labelledby="aj-h" hidden>
+    <!-- ajanlar (js/agents.js, yöneticiyle aynı yapı): zamanlanmış çalışır, çıktıyı burada bırakır. Kart: ⓘ bilgi, takvim, son çıktı; pencere: zamanlama + girdi + talimat + geçmiş -->
+    <section class="view page fit agp" data-view="ajanlar" aria-labelledby="aj-h" hidden>
       <div class="page-head">
-        <div><h1 id="aj-h">Ajanlar</h1><p>Tekrarlayan işleri senin yerine yapan yapay zekâ yardımcıları.</p></div>
+        <div><h1 id="aj-h">Ajanlar</h1><p>Düzenli tekrar eden işler için. Gününü, saatini ve talimatını planlayıp kaydedin; AI-LA ajanı bu plana göre çalıştırır, çıktılar burada toplanır.</p></div>
+        <span class="sync" data-ag-today></span>
       </div>
-      <ul class="aj-grid" data-aj></ul>
+      <div class="ag-wrap">
+        <ul class="ag-grid" data-ag></ul>
+        <aside class="ag-feed" aria-labelledby="agf-h">
+          <div class="dcard-h"><div><h2 id="agf-h">Son çıktılar</h2><p data-ag-feed-sub></p></div></div>
+          <ol class="agf-list" data-ag-feed></ol>
+        </aside>
+      </div>
+      <div class="ag-pop" role="dialog" aria-label="Ajan hakkında" data-ag-pop hidden></div>
+      <dialog class="ag-dlg" aria-labelledby="agd-h" data-ag-dlg>
+        <div class="agd-head">
+          <span class="tool-art" data-agd-art></span>
+          <div><h2 id="agd-h" data-agd-name></h2><p data-agd-desc></p></div>
+          <button type="button" class="ac-close" aria-label="Kapat" data-agd-close><svg class="icon"><use href="#i-x" /></svg></button>
+        </div>
+        <div class="seg-tabs sm" role="tablist" aria-label="Ajan">
+          <button type="button" role="tab" aria-selected="true" data-agtab="ayar">Zamanlama ve talimat</button>
+          <button type="button" role="tab" aria-selected="false" data-agtab="cikti">Çıktılar <b data-agd-count></b></button>
+          <button type="button" role="tab" aria-selected="false" data-agtab="bilgi">Ne yapar?</button>
+        </div>
+        <form class="agd-body" data-agpane="ayar" data-ag-form></form>
+        <div class="agd-body" data-agpane="cikti" hidden><ol class="ago-list" data-ag-outs></ol></div>
+        <div class="agd-body" data-agpane="bilgi" hidden data-ag-info></div>
+      </dialog>
     </section>
 
     <!-- ekosistem: sol alttaki kartla açılır -->

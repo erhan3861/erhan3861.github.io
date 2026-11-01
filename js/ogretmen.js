@@ -6,6 +6,7 @@ import { mountCat } from "./kedi.js";
 import { mountWhiteboard } from "./whiteboard.js";
 import { mountToolForm } from "./toolform.js";
 import { openRowMenu, MORE } from "./rowmenu.js";
+import { mountAgents } from "./agents.js";
 import { mountWeek, ARROW as WK_ARROW, ico, ders } from "./week.js";
 import { HAFTA } from "./hafta.js";
 import { PRODUCTS, AREAS, STUDENTS as SAMPLE } from "./data.js";
@@ -272,22 +273,41 @@ const toolForm = mountToolForm($('[data-view="arac"]'), {
   },
 });
 
-/* ---------- ajanlar ---------- */
-const AGENTS = [
-  [11, "Ders Planı Asistanı", "Kazanımı ve süreyi yaz, haftalık planı çıkarsın.", "Her pazartesi", true, 24],
-  [15, "Sınav Hazırlayıcı", "Konudan farklı zorlukta soru ve cevap anahtarı üretir.", "İstendiğinde", true, 17],
-  [8, "Ödev Değerlendirici", "Teslimleri rubriğe göre ön değerlendirir, sen onaylarsın.", "Teslim gelince", true, 41],
-  [3, "Veli Bilgilendirme", "Haftalık sınıf özetini velilere uygun dilde yazar.", "Her cuma", false, 6],
-  [16, "Farklılaştırma Ajanı", "Bir etkinliği üç seviyeye uyarlar.", "İstendiğinde", true, 12],
-  [12, "Toplantı Notu", "Zümre toplantı notlarını karar listesine çevirir.", "İstendiğinde", false, 3],
+/* ---------- ajanlar: yöneticideki yapı (js/agents.js) - planla, kaydet; AI-LA plana göre çalıştırır, çıktı buraya düşer ----------
+   Öğretmende tek seferlik üretim işleri Araçlar'da; burada yalnız düzenli tekrar eden üç iş: öğrenci analizi, veli bilgilendirme, ödev takibi. */
+const areaName = (id) => AREAS.find((a) => a.id === id).short;
+const pick = (v) => STU.filter((s) => v.siniflar.includes(s.cls));
+const T_AGENTS = [
+  { id: "analiz", art: 16, name: "Öğrenci Analizi Ajanı", desc: "Her hafta sınıflarınızın beceri ve teslim verisini özetler.",
+    what: "Sınıflarınızdaki öğrencilerin beceri haritasını, görev teslimlerini ve giriş sıklığını inceler; sınıf ortalamalarını, güçlü ve zayıf alanları ve ilgilenmeniz gereken öğrencileri tek sayfada toplar.",
+    reads: "Beceri haritası, haftalık görev teslimleri, AI araç kullanımı, son giriş tarihleri", makes: "Sınıf özeti + ilgilenilmesi gereken öğrenciler + her biri için öneri",
+    sched: { f: "haftalik", days: [0], t: "08:00" }, on: true,
+    inputs: [["siniflar", "Sınıflar", "checks", CLASSES], ["odak", "Odak", "select", ["Tüm alanlar", ...AREAS.map((a) => a.short)]], ["esik", "Dikkat eşiği (beceri puanı)", "number", 72]],
+    run: (v) => { const l = pick(v), low = l.filter((s) => s.score < +v.esik).sort((a, b) => a.score - b.score);
+      const cls = v.siniflar.map((c) => `${c}: ortalama ${classAvg(c)}, en zayıf alan ${areaName(AREAS.reduce((m, a) => (classArea(c, a.id) < classArea(c, m.id) ? a : m), AREAS[0]).id)}`);
+      return { title: `Haftalık analiz · ${v.siniflar.join(", ") || "sınıf seçilmedi"}`, lines: [...cls, low.length ? `${low.length} öğrenci ${v.esik} puanın altında: ${low.slice(0, 4).map((s) => `${s.short} (${s.score})`).join(", ")}` : `${v.esik} puanın altında öğrenci yok. En düşük üç: ${[...l].sort((a, b) => a.score - b.score).slice(0, 3).map((s) => `${s.short} (${s.score})`).join(", ")}`,
+        ...low.slice(0, 2).map((s) => `${s.short} · ${areaName(s.weak)}: ${s.advice}`)] }; } },
+  { id: "veli", art: 3, name: "Veli Bilgilendirme Ajanı", desc: "Haftalık sınıf özetinden veli mesajı taslağı hazırlar, onayınızı bekler.",
+    what: "Haftanın görevlerini, sınıfın gelişimini ve duyuruları velilere uygun, sade bir dille yazar. Siz onaylamadan hiçbir mesaj gönderilmez.",
+    reads: "Öğrenci Analizi Ajanı'nın haftalık özeti, görev teslimleri, okul duyuruları", makes: "Sınıf başına veli mesajı taslağı (onay bekler)",
+    sched: { f: "haftalik", days: [4], t: "16:00" }, on: true,
+    inputs: [["sinif", "Sınıf", "select", CLASSES], ["ton", "Üslup", "select", ["Sıcak ve kısa", "Resmî"]], ["icerik", "İçerik", "checks", ["Haftanın görevi", "Sınıf gelişimi", "Duyurular", "Evde yapılabilecekler"]], ["onay", "Göndermeden önce onayımı al", "toggle", true]],
+    run: (v) => ({ title: `Veli mesajı taslağı · ${v.sinif}`, lines: [
+      v.ton === "Resmî" ? `Sayın velimiz, ${v.sinif} sınıfımız bu hafta yapay zekâ destekli görevlerde ortalama ${classAvg(v.sinif)} beceri puanına ulaştı.` : `Merhaba! ${v.sinif} bu hafta harika çalıştı; sınıf ortalaması ${classAvg(v.sinif)} puan oldu.`,
+      ...(v.icerik.includes("Haftanın görevi") ? ["Bu haftanın görevi: yapay zekâyla bir oyunun kurallarını yazmak. Teslim oranı %78."] : []),
+      ...(v.icerik.includes("Duyurular") ? ["Duyuru: Talent Cup takım projeleri gelecek hafta başlıyor."] : []),
+      ...(v.icerik.includes("Evde yapılabilecekler") ? ["Evde: çocuğunuzla akşam yemeğinde günün sorusunu konuşabilirsiniz."] : []),
+      v.onay ? "Durum: onayınızı bekliyor." : "Durum: uygulama bildirimiyle gönderildi."] }) },
+  { id: "odev", art: 7, name: "Ödev Takip Ajanı", desc: "Teslim tarihi yaklaşan görevlerde teslim etmeyenleri bulur, hatırlatır.",
+    what: "Sınıflarınıza atadığınız görevlerin teslim durumunu izler; son tarihe az kala teslim etmeyen öğrencileri listeler ve seçtiğiniz kişilere kısa bir hatırlatma hazırlar.",
+    reads: "Atadığınız görevler ve son teslim tarihleri, öğrenci teslimleri", makes: "Teslim etmeyenler listesi + hatırlatma metni",
+    sched: { f: "haftaici", days: [0, 1, 2, 3, 4], t: "15:30" }, on: false,
+    inputs: [["gun", "Son teslime kaç gün kala", "number", 2], ["kime", "Hatırlatma kime", "select", ["Öğrenciye bildirim", "Öğrenci ve veliye", "Yalnız bana liste"]]],
+    run: (v) => { const miss = STU.filter((s) => s.cls && s.r && s.no % 5 === 0).slice(0, 5);
+      return { title: `${miss.length} öğrenci görevi henüz teslim etmedi`, lines: [`“Yapay zekâyla oyun kuralı yaz” görevinin son teslimine ${v.gun} gün kaldı.`, ...miss.map((s) => `${s.name} (${s.cls}) · son giriş ${s.login.toLocaleLowerCase("tr")}`), v.kime === "Yalnız bana liste" ? "Hatırlatma gönderilmedi; liste yalnız size." : `Hatırlatma: ${v.kime.toLocaleLowerCase("tr")} gönderilecek.`] }; } },
 ];
-$("[data-aj]").innerHTML = AGENTS.map(([art, t, d, when, on, runs], i) => { const [hue, tint] = hues[i % 4]; return `<li class="aj" style="--hue:${hue};--tint:${tint}">
-  <span class="tool-art"><img src="assets/araclar/t${String(art).padStart(2, "0")}.png" alt=""></span>
-  <div class="aj-body"><strong>${t}</strong><span>${d}</span></div>
-  <div class="aj-foot"><span class="aj-when"><svg class="icon" aria-hidden="true"><use href="#i-bell" /></svg>${when} · ${runs} çalışma</span>
-    <label class="tg aj-tg"><input type="checkbox" role="switch" ${on ? "checked" : ""} aria-label="${t} açık"><i aria-hidden="true"></i></label></div>
-  <button type="button" class="btn-ghost aj-run" data-run="${t}">Şimdi çalıştır</button></li>`; }).join("");
-$("[data-aj]").addEventListener("click", (e) => { const b = e.target.closest("[data-run]"); if (!b) return; b.textContent = "Çalışıyor…"; b.disabled = true; setTimeout(() => { b.textContent = "Tamamlandı · Koleksiyona eklendi"; }, 1200); });
+const T_EXAMPLES = { analiz: ["8-A'yı ayrıntılı incele", "Geçen haftayla karşılaştır"], veli: ["Talent Cup duyurusunu ekle", "Kısa tut, 3 cümle"], odev: ["Önce 7-A'yı listele"] };
+mountAgents($('[data-view="ajanlar"]'), { agents: T_AGENTS, examples: T_EXAMPLES, hues, key: "aila-ajanlar-ogretmen", runner: "AI-LA" });
 
 /* ---------- ekosistem ve topluluk (öğrenci paneliyle aynı) ---------- */
 const ECO = [
@@ -466,8 +486,8 @@ const T_SLIDES = [
       <a class="cta" href="${HAFTA.yarisma.href}" target="_blank" rel="noopener">Yarışmayı incele${WK_ARROW}</a>` },
   { label: "Bu hafta deneyin", tone: "dark", img: HAFTA.uretimGorsel.img, pos: "50% 45%",
     copy: `<span class="kicker">${ico("i-wand")}Bu hafta deneyin</span>
-      <h2>Bir etkinliği üç seviyeye uyarlayın</h2>
-      <p>Farklılaştırma Ajanı aynı konuyu kolay, orta ve ileri düzeyde hazırlar. Tek etkinlikle tüm sınıfa ulaşın.</p>
+      <h2>Pazartesi sabahı sınıf analiziniz hazır olsun</h2>
+      <p>Öğrenci Analizi Ajanı her pazartesi 08:00'de sınıflarınızın beceri ve teslim verisini özetler, ilgilenmeniz gereken öğrencileri listeler.</p>
       <a class="cta" href="#ajanlar">Ajanı aç${WK_ARROW}</a>` },
   { label: "Haftanın sözü", tone: "dark", img: HAFTA.ilham.img, pos: "50% 60%",
     copy: `<span class="kicker">${ico("i-heart")}Haftanın sözü</span>

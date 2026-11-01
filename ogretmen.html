@@ -70,6 +70,7 @@
     <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
     <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l3 3M18.5 4.5l2 2"/></symbol>
     <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5 6 5h12l2.5 8.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z"/><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
   </defs>
 </svg>
@@ -186,20 +187,41 @@
         <ul class="tool-grid all" data-all-tools></ul>
         <p class="empty" data-tools-empty hidden>Bu aramayla eşleşen araç yok.</p>
       </div>
+      <!-- koleksiyon: mevcut uygulamadaki iki ayrı filtre (araç açılır listesi + öğrenme çıktısı penceresi) tek çubukta;
+           kütüphane (tümü, paylaşılanlar, atananlar) + klasörler solda; kartta Aç / Sınıfa ata / Paylaş / Klasör; sayfalama yerine "daha fazla" -->
       <div class="tab-pane col" data-pane="koleksiyon" hidden>
         <aside class="col-side">
-          <p class="col-side-h">Klasörler</p>
+          <p class="col-side-h">Kütüphane</p>
+          <ul class="col-folders" data-col-lib></ul>
+          <p class="col-side-h fh">Klasörlerim</p>
           <ul class="col-folders" data-col-folders></ul>
           <button type="button" class="col-new" data-col-new><svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>Yeni klasör</button>
         </aside>
         <div class="col-main">
           <div class="col-bar">
-            <div class="chips" role="group" aria-label="Tür" data-col-chips></div>
-            <label class="col-sort">Sırala<select data-col-sort><option value="yeni">En yeni</option><option value="eski">En eski</option><option value="ad">Ada göre</option></select></label>
+            <label class="search col-q"><svg class="icon" aria-hidden="true"><use href="#i-search" /></svg><input type="search" placeholder="Üretimlerde ara…" aria-label="Üretimlerde ara" data-col-q></label>
+            <label class="fsel"><span>Araç</span><select data-col-tool></select></label>
+            <label class="fsel"><span>Sınıf</span><select data-col-grade></select></label>
+            <label class="fsel"><span>Ders</span><select data-col-ders></select></label>
+            <button type="button" class="fchip" aria-pressed="false" data-col-assignable><svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>Atanabilir</button>
+            <label class="fsel"><span>Sırala</span><select data-col-sort><option value="yeni">En yeni</option><option value="eski">En eski</option><option value="ad">Ada göre</option></select></label>
+            <div class="vtoggle" role="group" aria-label="Görünüm"><button type="button" aria-pressed="true" aria-label="Kart" data-col-view="grid"><svg class="icon"><use href="#i-grid" /></svg></button><button type="button" aria-pressed="false" aria-label="Liste" data-col-view="list"><svg class="icon"><use href="#i-layers" /></svg></button></div>
           </div>
-          <ul class="col-grid" data-col-grid></ul>
-          <p class="empty" data-col-empty hidden>Bu klasörde bu türde bir üretim yok.</p>
+          <div class="col-active" data-col-active></div>
+          <div class="col-scroll">
+            <ul class="col-grid" data-col-grid></ul>
+            <p class="empty" data-col-empty hidden>Bu filtrelerle eşleşen üretim yok. <button type="button" class="linkish" data-col-clear>Filtreleri temizle</button></p>
+            <div class="col-more" data-col-more></div>
+          </div>
         </div>
+        <dialog class="pf-dlg rs-dlg" aria-labelledby="as-h" data-as-dlg>
+          <form method="dialog" data-as-form>
+            <div class="pf-card-head"><h2 id="as-h" data-as-title>Sınıfa ata</h2></div>
+            <p class="rs-text" data-as-text></p>
+            <div class="k-fields" data-as-fields></div>
+            <div class="pf-actions"><span class="pf-saved" role="status" data-as-status></span><button type="button" class="btn-ghost" data-as-close>Vazgeç</button><button type="submit" class="btn-primary" data-as-ok>Ata</button></div>
+          </form>
+        </dialog>
       </div>
     </section>
 

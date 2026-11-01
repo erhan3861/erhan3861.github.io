@@ -117,56 +117,142 @@ const setTab = (tab) => {
 };
 $$("[data-tab]").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
 
-/* ---------- koleksiyon: ürettiklerin, klasör + tür filtresi + sıralama ---------- */
-const COL_TYPES = [["tum", "Tümü"], ["plan", "Ders planı"], ["sinav", "Sınav"], ["gorsel", "Görsel"], ["video", "Video"], ["sunum", "Sunum"], ["ses", "Ses"]];
-const TYPE_ART = { plan: 11, sinav: 15, sunum: 11, ses: 13 };
-let folders = ["Ders planları", "Sınavlar", "Görseller", "7-A materyalleri"];
-const COL = [
-  { t: "Fotosentez ders planı", k: "plan", f: "Ders planları", d: 1 },
-  { t: "Güneş sistemi posteri", k: "gorsel", f: "Görseller", img: "uzay", d: 2 },
-  { t: "Kuvvet ve hareket testi", k: "sinav", f: "Sınavlar", d: 3 },
-  { t: "Fotosentez özet videosu", k: "video", f: "7-A materyalleri", img: "foto", d: 4 },
-  { t: "Bilim şenliği afişi", k: "gorsel", f: "Görseller", img: "afis", d: 6 },
-  { t: "Maddenin halleri sunumu", k: "sunum", f: "Ders planları", d: 7 },
-  { t: "Hücre bölünmesi quiz", k: "sinav", f: "Sınavlar", d: 9 },
-  { t: "Deney güvenliği seslendirme", k: "ses", f: "7-A materyalleri", d: 10 },
-  { t: "Yardımcı robot modeli", k: "gorsel", f: "Görseller", img: "robot", d: 12 },
-  { t: "Kesirler ara değerlendirme", k: "sinav", f: "7-A materyalleri", d: 14 },
-];
-let colFolder = "tum", colType = "tum";
-const ago = (d) => d === 1 ? "Dün" : d < 7 ? `${d} gün önce` : `${Math.round(d / 7)} hafta önce`;
-const renderFolders = () => {
-  const n = (f) => COL.filter((x) => f === "tum" || x.f === f).length;
-  $("[data-col-folders]").innerHTML = [["tum", "Tüm üretimler"], ...folders.map((f) => [f, f])].map(([id, label]) =>
-    `<li><button type="button" class="col-f" aria-pressed="${id === colFolder}" data-f="${esc(id)}"><svg class="icon" aria-hidden="true"><use href="#${id === "tum" ? "i-layers" : "i-folder"}" /></svg><span>${esc(label)}</span><b>${n(id)}</b></button></li>`).join("");
-  $("[data-col-count]").textContent = COL.length;
+/* ---------- koleksiyon: ürettiklerin ----------
+   Mevcut uygulamadaki araç türleri, sınıf/ders filtresi, paylaşılanlar ve "Atanabilir" korunur; tek filtre çubuğu,
+   kütüphane + klasör menüsü, kartta Aç / Sınıfa ata / Paylaş / Klasör, sayfalama yerine "daha fazla göster". Demo veri. */
+const KTOOLS = {
+  sinav: ["Karışık Sınav Oluştur", 15], plan: ["Ders Planı Oluştur", 11], kabul: ["Temel Kabuller Soru Seti", 16],
+  drama: ["Hikâye-Drama Oluştur", 3], veli: ["Veli Toplantısı Raporu", 12], perf: ["Performans Gelişim Özeti", 8],
+  sim: ["Simülasyon Aracı", 6], okuyucu: ["Sınav Okuyucu", 14], gorsel: ["Görsel Oluştur", 1], video: ["Video Oluştur", 2],
 };
-const renderCol = () => {
-  const sort = $("[data-col-sort]").value;
-  const list = COL.filter((x) => (colFolder === "tum" || x.f === colFolder) && (colType === "tum" || x.k === colType))
-    .sort((a, b) => sort === "ad" ? a.t.localeCompare(b.t, "tr") : sort === "eski" ? b.d - a.d : a.d - b.d);
-  const label = Object.fromEntries(COL_TYPES);
-  $("[data-col-grid]").innerHTML = list.map((x) => `<li class="col-item">
-    <span class="col-shot${x.img ? "" : " doc"}">${x.img ? `<img src="assets/thumbs/${x.img}.jpg" alt="" loading="lazy">` : `<img src="assets/araclar/t${TYPE_ART[x.k]}.png" alt="">`}${x.k === "video" ? '<svg class="icon play" aria-hidden="true"><use href="#i-video" /></svg>' : ""}</span>
-    <span class="col-meta"><strong>${esc(x.t)}</strong><span><b>${label[x.k]}</b> · ${ago(x.d)}</span></span>
-    <label class="col-move" title="Klasöre taşı"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg><select aria-label="${esc(x.t)} klasörü" data-move="${COL.indexOf(x)}">${folders.map((f) => `<option${f === x.f ? " selected" : ""}>${esc(f)}</option>`).join("")}</select></label>
-  </li>`).join("");
+const DERSLER = ["Fen Bilimleri", "Matematik", "Türkçe", "Sosyal Bilgiler", "İngilizce"];
+const KONU = {
+  "Fen Bilimleri": ["Elektriğin İletimi ve Direnç", "Işığın Dünyası", "Maddenin Doğası", "Kuvveti Tanıyalım", "Gökyüzündeki Komşularımız", "Hücre ve Bölünmeler"],
+  "Matematik": ["Geometrik Şekiller", "Veriden Olasılığa", "Geometrik Nicelikler", "Kesirler", "Doğal Sayılar"],
+  "Türkçe": ["Oyun Dünyası", "Erdemler", "Okuma Kültürü", "Millî Kültürümüz"],
+  "Sosyal Bilgiler": ["Birey ve Toplum", "Kültür ve Miras"], "İngilizce": ["My Daily Routine", "Festivals"],
+};
+let folders = ["Fen 5. sınıf", "Matematik 5", "Veli raporları", "Sınavlar"];
+const COL = [];
+{
+  const r = seed("koleksiyon"), keys = Object.keys(KTOOLS);
+  for (let i = 0; i < 46; i++) {
+    const k = keys[Math.floor(r() * keys.length)], d = k === "veli" || k === "perf" ? null : DERSLER[Math.floor(r() * (r() < .6 ? 2 : DERSLER.length))];
+    const grade = k === "veli" ? 8 : 5 + Math.floor(r() * 3);
+    const konu = d ? KONU[d][Math.floor(r() * KONU[d].length)] : null;
+    const title = k === "veli" ? `${["Kaan Yılmaz", "Ece Şahin", "8-A sınıfı", "Defne Aydın"][i % 4]} veli raporu`
+      : k === "perf" ? `${["7-A", "7-B", "8-A"][i % 3]} performans özeti` : k === "plan" ? `${d} (${grade}. sınıf) ders planı`
+      : k === "okuyucu" ? `${d} sınav değerlendirmesi` : k === "drama" ? `Drama: ${["sabır", "paylaşmak", "dürüstlük"][i % 3]}`
+      : k === "gorsel" ? ["Güneş sistemi posteri", "Bilim şenliği afişi", "Yardımcı robot", "Masal kapağı"][i % 4] : k === "video" ? "Fotosentez özet videosu" : `${d} - ${konu}`;
+    const folder = k === "veli" ? "Veli raporları" : k === "sinav" && r() < .5 ? "Sınavlar" : d === "Fen Bilimleri" && r() < .4 ? "Fen 5. sınıf" : d === "Matematik" && r() < .4 ? "Matematik 5" : null;
+    const img = k === "gorsel" ? ["uzay", "afis", "robot", "masal"][i % 4] : k === "video" ? "foto" : null;
+    COL.push({ id: `c${i}`, t: title, k, ders: d, grade: k === "perf" ? null : grade, folder, d: i * 2 + Math.floor(r() * 2),
+      atanabilir: ["sinav", "okuyucu", "kabul", "sim"].includes(k), assigned: [], shared: r() < .14, fromOther: r() < .07 ? ["Gül Arslan", "Hakan Demir"][i % 2] : null, img });
+  }
+  const asg = COL.filter((x) => x.atanabilir && !x.fromOther);   // yalnız atanabilir üretimler sınıfa gider
+  if (asg[0]) asg[0].assigned = ["7-A"]; if (asg[2]) asg[2].assigned = ["7-B", "8-A"];
+}
+const PAGE = 18;
+let colLib = "tum", colFolder = null, colTool = "", colGrade = "", colDers = "", colAssignable = false, colQ = "", colView = "grid", colShown = PAGE;
+const LIB = [["tum", "Tüm üretimler", "i-layers"], ["paylasilan", "Benimle paylaşılan", "i-people"], ["paylastigim", "Paylaştıklarım", "i-share"], ["atanan", "Sınıflara atanan", "i-school"]];
+const libFilter = { tum: (x) => !x.fromOther, paylasilan: (x) => !!x.fromOther, paylastigim: (x) => x.shared, atanan: (x) => x.assigned.length > 0 };
+const ago = (d) => d === 0 ? "Bugün" : d === 1 ? "Dün" : d < 7 ? `${d} gün önce` : d < 30 ? `${Math.round(d / 7)} hafta önce` : `${Math.round(d / 30)} ay önce`;
+const colList = () => COL.filter((x) => (colFolder ? x.folder === colFolder && !x.fromOther : libFilter[colLib](x))
+  && (!colTool || x.k === colTool) && (!colGrade || String(x.grade) === colGrade) && (!colDers || x.ders === colDers)
+  && (!colAssignable || x.atanabilir) && (!colQ || norm(x.t + " " + KTOOLS[x.k][0]).includes(colQ)))
+  .sort((a, b) => { const s = $("[data-col-sort]").value; return s === "ad" ? a.t.localeCompare(b.t, "tr") : s === "eski" ? b.d - a.d : a.d - b.d; });
+const fillSelects = () => {
+  const base = COL.filter((x) => (colFolder ? x.folder === colFolder : libFilter[colLib](x)));
+  const cnt = (f) => base.filter(f).length;
+  $("[data-col-tool]").innerHTML = `<option value="">Tümü (${base.length})</option>` + Object.entries(KTOOLS).filter(([k]) => cnt((x) => x.k === k)).map(([k, [n]]) => `<option value="${k}"${k === colTool ? " selected" : ""}>${n} (${cnt((x) => x.k === k)})</option>`).join("");
+  $("[data-col-grade]").innerHTML = `<option value="">Tümü</option>` + [5, 6, 7, 8].map((g) => `<option value="${g}"${String(g) === colGrade ? " selected" : ""}>${g}. sınıf</option>`).join("");
+  $("[data-col-ders]").innerHTML = `<option value="">Tümü</option>` + DERSLER.map((d) => `<option${d === colDers ? " selected" : ""}>${d}</option>`).join("");
+};
+const renderLib = () => {
+  $("[data-col-lib]").innerHTML = LIB.map(([id, label, ic]) => `<li><button type="button" class="col-f" aria-pressed="${!colFolder && id === colLib}" data-lib="${id}"><svg class="icon" aria-hidden="true"><use href="#${ic}" /></svg><span>${label}</span><b>${COL.filter(libFilter[id]).length}</b></button></li>`).join("");
+  $("[data-col-folders]").innerHTML = folders.map((f) => `<li><button type="button" class="col-f" aria-pressed="${f === colFolder}" data-f="${esc(f)}"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg><span>${esc(f)}</span><b>${COL.filter((x) => x.folder === f).length}</b></button></li>`).join("");
+  $("[data-col-count]").textContent = COL.filter(libFilter.tum).length;
+};
+const renderActive = () => {
+  const pills = [colTool && ["tool", KTOOLS[colTool][0]], colGrade && ["grade", `${colGrade}. sınıf`], colDers && ["ders", colDers], colAssignable && ["as", "Atanabilir"], colQ && ["q", `“${$("[data-col-q]").value.trim()}”`]].filter(Boolean);
+  $("[data-col-active]").innerHTML = pills.length ? pills.map(([k, l]) => `<button type="button" class="apill" data-rm="${k}">${esc(l)}<svg class="icon" aria-hidden="true"><use href="#i-x" /></svg></button>`).join("") + `<button type="button" class="linkish" data-col-clear>Tümünü temizle</button>` : "";
+};
+const colCard = (x) => { const [tn, art] = KTOOLS[x.k];
+  return `<li class="col-item" data-id="${x.id}">
+    <span class="col-shot${x.img ? "" : " doc"}">${x.img ? `<img src="assets/thumbs/${x.img}.jpg" alt="" loading="lazy">` : `<img src="assets/araclar/t${String(art).padStart(2, "0")}.png" alt="">`}${x.k === "video" ? '<svg class="icon play" aria-hidden="true"><use href="#i-video" /></svg>' : ""}
+      <span class="col-acts"><button type="button" class="ca" data-act="ac" title="Aç" aria-label="Aç"><svg class="icon"><use href="#i-eye" /></svg></button>${x.atanabilir ? `<button type="button" class="ca" data-act="ata" title="Sınıfa ata" aria-label="Sınıfa ata"><svg class="icon"><use href="#i-school" /></svg></button>` : ""}<button type="button" class="ca" data-act="paylas" title="Paylaş" aria-label="Paylaş"><svg class="icon"><use href="#i-share" /></svg></button><label class="ca" title="Klasöre taşı"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg><select aria-label="${esc(x.t)} klasörü" data-move="${x.id}"><option value="">Klasörsüz</option>${folders.map((f) => `<option${f === x.folder ? " selected" : ""}>${esc(f)}</option>`).join("")}</select></label></span></span>
+    <span class="col-meta"><strong title="${esc(x.t)}">${esc(x.t)}</strong><span class="col-tool">${tn}</span>
+      <span class="col-tags">${x.grade ? `<i>${x.grade}. sınıf</i>` : ""}${x.atanabilir ? `<i class="ok">Atanabilir</i>` : ""}${x.assigned.length ? `<i class="as">${x.assigned.join(", ")} atandı</i>` : ""}${x.shared ? `<i class="sh">Paylaşıldı</i>` : ""}</span>
+      <span class="col-foot"><span>${x.fromOther ? `${esc(x.fromOther)} paylaştı · ` : ""}${ago(x.d)}</span>${x.folder ? `<span class="col-fb"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg>${esc(x.folder)}</span>` : ""}</span></span>
+  </li>`; };
+const renderCol = (keep = false) => {
+  if (!keep) colShown = PAGE;
+  const list = colList(), shown = list.slice(0, colShown);
+  const grid = $("[data-col-grid]"); grid.classList.toggle("list", colView === "list");
+  grid.innerHTML = shown.map(colCard).join("");
   $("[data-col-empty]").hidden = list.length > 0;
+  $("[data-col-more]").innerHTML = list.length > colShown ? `<span>${list.length} üretimden ${shown.length} gösteriliyor</span><button type="button" class="btn-ghost" data-col-moreb>Daha fazla göster</button>` : list.length ? `<span>${list.length} üretim</span>` : "";
+  renderActive();
 };
-chips($("[data-col-chips]"), COL_TYPES, (id) => { colType = id; renderCol(); });
-$("[data-col-folders]").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (!b) return; colFolder = b.dataset.f; renderFolders(); renderCol(); });
-$("[data-col-sort]").addEventListener("change", renderCol);
-$("[data-col-grid]").addEventListener("change", (e) => { const s = e.target.closest("[data-move]"); if (!s) return; COL[+s.dataset.move].f = s.value; renderFolders(); renderCol(); });
+const colAll = () => { renderLib(); fillSelects(); renderCol(); };
+$("[data-col-lib]").addEventListener("click", (e) => { const b = e.target.closest("[data-lib]"); if (!b) return; colLib = b.dataset.lib; colFolder = null; colAll(); });
+$("[data-col-folders]").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (!b) return; colFolder = b.dataset.f; colAll(); });
+$("[data-col-tool]").addEventListener("change", (e) => { colTool = e.target.value; renderCol(); });
+$("[data-col-grade]").addEventListener("change", (e) => { colGrade = e.target.value; renderCol(); });
+$("[data-col-ders]").addEventListener("change", (e) => { colDers = e.target.value; renderCol(); });
+$("[data-col-sort]").addEventListener("change", () => renderCol());
+$("[data-col-q]").addEventListener("input", (e) => { colQ = norm(e.target.value.trim()); renderCol(); });
+$("[data-col-assignable]").addEventListener("click", (e) => { colAssignable = !colAssignable; e.currentTarget.setAttribute("aria-pressed", String(colAssignable)); renderCol(); });
+$$("[data-col-view]").forEach((b) => b.addEventListener("click", () => { colView = b.dataset.colView; $$("[data-col-view]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderCol(true); }));
+const clearCol = () => { colTool = colGrade = colDers = colQ = ""; colAssignable = false; $("[data-col-q]").value = ""; $("[data-col-assignable]").setAttribute("aria-pressed", "false"); fillSelects(); renderCol(); };
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-col-clear]")) clearCol();
+  const rm = e.target.closest("[data-rm]");
+  if (rm) { ({ tool: () => { colTool = ""; }, grade: () => { colGrade = ""; }, ders: () => { colDers = ""; }, as: () => { colAssignable = false; $("[data-col-assignable]").setAttribute("aria-pressed", "false"); }, q: () => { colQ = ""; $("[data-col-q]").value = ""; } })[rm.dataset.rm](); fillSelects(); renderCol(); }
+  if (e.target.closest("[data-col-moreb]")) { colShown += PAGE; renderCol(true); }
+});
+$("[data-col-grid]").addEventListener("change", (e) => { const s = e.target.closest("[data-move]"); if (!s) return; COL.find((x) => x.id === s.dataset.move).folder = s.value || null; renderLib(); renderCol(true); });
+// kart işlemleri: Aç (demo bilgi), Sınıfa ata, Paylaş
+const asDlg = $("[data-as-dlg]"); let asItem = null, asMode = null;
+$("[data-col-grid]").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  asItem = COL.find((x) => x.id === b.closest("[data-id]").dataset.id); asMode = b.dataset.act;
+  const f = $("[data-as-fields]"); $("[data-as-ok]").hidden = false; $("[data-as-status]").textContent = "";
+  if (asMode === "ata") {
+    $("[data-as-title]").textContent = "Sınıfa ata"; $("[data-as-text]").textContent = `“${asItem.t}” öğrencilere görev olarak gönderilecek.`; $("[data-as-ok]").textContent = "Ata";
+    f.innerHTML = `<div class="as-cls">${CLASSES.map((c) => `<label><input type="checkbox" value="${c}"${asItem.assigned.includes(c) ? " checked" : ""}><span>${c}<small>${inClass(c).length} öğrenci</small></span></label>`).join("")}</div>
+      <label class="fld"><span>Son teslim</span><input type="date" data-as-date></label>`;
+  } else if (asMode === "paylas") {
+    $("[data-as-title]").textContent = "Paylaş"; $("[data-as-text]").textContent = `“${asItem.t}” okulunuzdaki öğretmenlerle paylaşılacak.`; $("[data-as-ok]").textContent = "Paylaş";
+    f.innerHTML = `<label class="fld"><span>Kiminle</span><select data-as-who><option>Tüm zümre öğretmenleri</option><option>Gül Arslan</option><option>Hakan Demir</option><option>Seda Kaya</option></select></label>`;
+  } else {
+    $("[data-as-title]").textContent = asItem.t; $("[data-as-ok]").hidden = true;
+    $("[data-as-text]").textContent = `${KTOOLS[asItem.k][0]} ile ${ago(asItem.d).toLocaleLowerCase("tr")} üretildi. Demoda içerik önizlemesi yok; gerçek uygulamada burada açılır.`;
+    f.innerHTML = "";
+  }
+  asDlg.showModal();
+});
+$("[data-as-form]").addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (asMode === "ata") {
+    const sel = $$(".as-cls input:checked", asDlg).map((i) => i.value);
+    if (!sel.length) { $("[data-as-status]").textContent = "En az bir sınıf seçin."; $("[data-as-status]").className = "pf-saved on bad"; return; }
+    asItem.assigned = sel;
+  } else if (asMode === "paylas") asItem.shared = true;
+  asDlg.close(); renderLib(); renderCol(true);
+});
+$("[data-as-close]").addEventListener("click", () => asDlg.close());
+asDlg.addEventListener("click", (e) => { if (e.target === asDlg) asDlg.close(); });
 $("[data-col-new]").addEventListener("click", () => {
-  const ul = $("[data-col-folders]");
-  if ($(".col-f-new", ul)) return;
+  const ul = $("[data-col-folders]"); if ($(".col-f-new", ul)) return;
   const li = document.createElement("li"); li.innerHTML = `<input class="col-f-new" placeholder="Klasör adı" maxlength="28" aria-label="Yeni klasör adı">`;
   ul.append(li); const inp = $("input", li); inp.focus();
-  const done = () => { const v = inp.value.trim(); if (v && !folders.includes(v)) { folders.push(v); colFolder = v; } renderFolders(); renderCol(); };
-  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") done(); if (e.key === "Escape") renderFolders(); });
+  const done = () => { const v = inp.value.trim(); if (v && !folders.includes(v)) { folders.push(v); colFolder = v; } colAll(); };
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") done(); if (e.key === "Escape") renderLib(); });
   inp.addEventListener("blur", done);
 });
-renderFolders(); renderCol();
+
+colAll();
 
 /* ---------- ajanlar ---------- */
 const AGENTS = [

@@ -86,6 +86,15 @@
     .ca-acts li { grid-template-columns: 44px 1fr auto; }
     .ca-thumb { width: 44px; height: 44px; border-radius: 12px; }
     .ca-thumb .icon { width: 20px; height: 20px; }
+    /* ekran sütunun yarısı, yanında rolün 4 maddesi */
+    .role-row { display: grid; gap: 28px; align-items: center; }
+    @media (min-width: 900px) { .role-row { grid-template-columns: 1fr 1fr; gap: 40px; } }
+    .role-points { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+    .role-points li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; }
+    .rp-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: #eef2fd; color: #345de0; }
+    .rp-ic .icon { width: 20px; height: 20px; }
+    .role-points strong { display: block; font: 700 16px/1.3 var(--display); letter-spacing: -0.02em; color: #10122c; }
+    .role-points small { display: block; margin-top: 3px; font-size: 14px; line-height: 1.5; color: #5f6680; }
   </style>
 </head>
 <body>
@@ -295,15 +304,39 @@
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-ogrenci" aria-labelledby="tab-ogrenci" tabindex="0" data-profile="Öğrenci profili">
-          <figure class="role-shot"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" decoding="async" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı, görev geri bildirimi ve son aktiviteler" /></figure>
+          <div class="role-row">
+            <figure class="role-shot"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" decoding="async" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı, görev geri bildirimi ve son aktiviteler" /></figure>
+            <ul class="role-points">
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-check" /></svg></span><span><strong>Haftanın AI görevi</strong><small>Her hafta derslerle bağlantılı bir görev; teslim edince öğretmeninden geri bildirim gelir.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-brain-circuit" /></svg></span><span><strong>Kendini Tanı</strong><small>Ekosistemdeki çalışmaları Maarif Modeli’nin altı beceri alanında puana dönüşür.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-wand-sparkles" /></svg></span><span><strong>Rolüne uygun araçlar</strong><small>Görsel, video, müzik, kod ve 3D üretimi tek yerde.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-messages-square" /></svg></span><span><strong>AI-LA sohbet</strong><small>Seviyesini ve ilgisini bilen kişisel sohbet alanı.</small></span></li>
+            </ul>
+          </div>
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-ogretmen" aria-labelledby="tab-ogretmen" tabindex="0" data-profile="Öğretmen profili" hidden>
-          <figure class="role-shot"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" decoding="async" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></figure>
+          <div class="role-row">
+            <figure class="role-shot"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" decoding="async" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></figure>
+            <ul class="role-points">
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-presentation" /></svg></span><span><strong>Ders tahtası</strong><small>Kalem, fosforlu kalem ve yapışkan notlarla anlat; tahtayı kaydet, sınıfla paylaş.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb" /></svg></span><span><strong>Ders planı ve sınav</strong><small>Kazanıma uygun plan, seviyeye göre karışık sınav ve rubrik dakikalar içinde.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><span><strong>Sınıfların beceri haritası</strong><small>Her şubenin altı beceri alanındaki durumu tek bakışta.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-bot" /></svg></span><span><strong>Ajanlar</strong><small>Veli mesajı, rapor gibi tekrarlayan işleri senin yerine yapar.</small></span></li>
+            </ul>
+          </div>
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-yonetici" aria-labelledby="tab-yonetici" tabindex="0" data-profile="Yönetici profili" hidden>
-          <figure class="role-shot"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" decoding="async" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></figure>
+          <div class="role-row">
+            <figure class="role-shot"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" decoding="async" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></figure>
+            <ul class="role-points">
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><span><strong>Kurum raporu</strong><small>Öğrenci, öğretmen, AI üretimi ve zaman tasarrufu tek ekranda.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-info" /></svg></span><span><strong>Erken uyarılar</strong><small>Giriş yapmayan öğrenciler, araçları kullanmayan öğretmenler, sınıfsız öğrenciler.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-layers" /></svg></span><span><strong>Beceri haritası ve kademeler</strong><small>İlkokul, ortaokul ve lise aynı altı alanda karşılaştırılır.</small></span></li>
+              <li><span class="rp-ic"><svg class="icon" aria-hidden="true"><use href="#i-earth" /></svg></span><span><strong>Ekosistem verisi</strong><small>Bağlı platformlardan gelen veri tek yerde, standart biçimde.</small></span></li>
+            </ul>
+          </div>
         </div>
       </div>
 

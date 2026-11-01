@@ -180,7 +180,7 @@ renderTools();
    Her ajan seçilen gün ve saatte "çalışır" (demo: sayfa açıkken o saat geçmişse bugünün çıktısı hazırdır), çıktısını buraya bırakır.
    Ayarlar bu tarayıcıda saklanır (aila-ajanlar). Çıktılar kurumun demo verisinden üretilir. */
 const GUN = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
-const FREQ = [["gunluk", "Her gün"], ["haftaici", "Hafta içi"], ["haftalik", "Seçili günler"], ["elle", "Yalnız elle"]];
+const FREQ = [["gunluk", "Her gün"], ["haftaici", "Hafta içi"], ["haftalik", "Seçili günler"], ["elle", "Plan yok"]];
 const off7 = () => STU.filter((s) => s.days >= 7);
 const AGENTS = [
   { id: "rapor", art: 16, name: "Raporlama Ajanı", desc: "Her sabah kurumun günlük özet raporunu hazırlar.",
@@ -216,7 +216,7 @@ const AGENTS = [
   { id: "toplanti", art: 12, name: "Toplantı Notu Ajanı", desc: "Toplantı notlarını karar ve görev listesine çevirir.",
     what: "Yapıştırdığınız toplantı notunu okur; kararları, sorumluları ve tarihleri ayırır.",
     reads: "Sizin yapıştırdığınız notlar", makes: "Karar listesi + sorumlu ve tarih",
-    sched: { f: "elle", days: [], t: "09:00" }, on: true,
+    sched: { f: "elle", days: [], t: "09:00" }, on: false,
     inputs: [["not", "Toplantı notu", "textarea", ""]],
     run: (v) => ({ title: "Karar listesi", lines: v.not ? v.not.split(/[.\n]/).map((x) => x.trim()).filter(Boolean).slice(0, 5).map((x, i) => `${i + 1}. ${x}`) : ["Not girilmedi. Ayarlar sekmesindeki alana toplantı notunu yapıştırın."] }) },
 ];
@@ -249,12 +249,12 @@ const catchUp = () => AGENTS.forEach((a) => {
 });
 const fmtAt = (ms) => { const d = new Date(ms); return `${d.toDateString() === new Date().toDateString() ? "Bugün" : d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} ${d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`; };
 const agArt = (a, i) => { const [hue, tint] = hues[i % 4]; return `style="--hue:${hue};--tint:${tint}"><img src="assets/araclar/t${String(a.art).padStart(2, "0")}.png" alt=""`; };
-// v1: plan kaydedilir, ajan elle çalıştırılır (otomatik çalışma sonraki sürüm). Kart sade: kimlik, plan, tek oynat düğmesi.
-const PLAY = '<svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>';
+// Yönetici yalnız planlar ve kaydeder; ajanı kurum sistemi bu plana göre çalıştırır, çıktısı buraya düşer.
+// Kart sade: kimlik, plan hapı, Aktif/Pasif anahtarı; pasif ajan soluk görünür.
 const renderAg = () => {
-  agSave();
+  catchUp(); agSave();
   $("[data-ag]").innerHTML = AGENTS.map((a, i) => { const st = agS(a), last = st.outs[0];
-    return `<li class="ag" data-ag-id="${a.id}">
+    return `<li class="ag${st.on ? "" : " off"}" data-ag-id="${a.id}">
       <button type="button" class="ag-main" data-ag-open="ayar" aria-label="${a.name} ayarları">
         <span class="tool-art" ${agArt(a, i)}></span>
         <span class="ag-t"><strong>${a.name}</strong><span>${a.desc}</span></span>
@@ -262,15 +262,15 @@ const renderAg = () => {
       <button type="button" class="ag-i" aria-label="${a.name} ne yapar?" title="Ne yapar?" data-ag-info-btn><svg class="icon"><use href="#i-info" /></svg></button>
       <div class="ag-row">
         <button type="button" class="ag-plan${st.sched.f === "elle" ? " none" : ""}" data-ag-open="ayar">${st.sched.f === "elle" ? "Plan yok" : schedText(st.sched)}</button>
-        <button type="button" class="ag-play" aria-label="${a.name} çalıştır" title="Çalıştır" data-ag-run>${PLAY}</button>
+        <label class="ag-sw" title="${st.on ? "Aktif" : "Pasif"}"><span>${st.on ? "Aktif" : "Pasif"}</span><input type="checkbox" role="switch" ${st.on ? "checked" : ""} aria-label="${a.name} aktif" data-ag-on><i aria-hidden="true"></i></label>
       </div>
       ${last ? `<button type="button" class="ag-out" data-ag-open="cikti"><span>${fmtAt(last.at)}</span><b>${esc(last.title)}</b>${ARROW}</button>` : ""}
     </li>`; }).join("");
   const feed = AGENTS.flatMap((a) => agS(a).outs.map((o) => ({ a, o }))).sort((x, y) => y.o.at - x.o.at).slice(0, 12);
   $("[data-ag-feed-sub]").textContent = feed.length ? `${feed.length} çıktı` : "Henüz çıktı yok";
-  $("[data-ag-feed]").innerHTML = feed.map(({ a, o }) => `<li><button type="button" class="agf" data-ag-feed-open="${a.id}"><time>${fmtAt(o.at).replace("Bugün ", "")}</time><span><small>${a.name}</small><strong>${esc(o.title)}</strong></span>${ARROW}</button></li>`).join("") || `<li class="agf-empty">Bir ajanı çalıştırdığınızda çıktısı burada görünür.</li>`;
-  const planned = AGENTS.filter((a) => agS(a).sched.f !== "elle").length;
-  $("[data-ag-today]").textContent = `${planned} ajanın planı kayıtlı`;
+  $("[data-ag-feed]").innerHTML = feed.map(({ a, o }) => `<li><button type="button" class="agf" data-ag-feed-open="${a.id}"><time>${fmtAt(o.at).replace("Bugün ", "")}</time><span><small>${a.name}</small><strong>${esc(o.title)}</strong></span>${ARROW}</button></li>`).join("") || `<li class="agf-empty">Aktif ajanlar planlı saatlerinde kurum sisteminde çalıştıkça çıktılar burada görünür.</li>`;
+  const active = AGENTS.filter((a) => agS(a).on).length;
+  $("[data-ag-today]").textContent = `${active} / ${AGENTS.length} ajan aktif`;
 };
 // ⓘ bilgi kutusu
 const pop = $("[data-ag-pop]");
@@ -298,8 +298,8 @@ const openAg = (id, tab = "ayar") => {
     <section class="agd-sec"><h3><svg class="icon" aria-hidden="true"><use href="#i-chat" /></svg>Talimat <small>isteğe bağlı</small></h3>
       <textarea name="talimat" rows="2" maxlength="300" placeholder="Örneğin: ${TALIMAT_ORNEK[a.id][0]}">${esc(st.talimat)}</textarea>
       <div class="ag-ex">${TALIMAT_ORNEK[a.id].map((t) => `<button type="button" class="apill" data-ex="${esc(t)}">${t}</button>`).join("")}</div></section>
-    <div class="pf-actions"><span class="pf-saved" role="status" data-ag-status></span><button type="submit" class="btn-ghost">Kaydet</button><button type="button" class="btn-primary ag-runbtn" data-ag-run-dlg><svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>Kaydet ve çalıştır</button></div>`;
-  $("[data-ag-outs]").innerHTML = st.outs.map((o, k) => `<li class="ago"><details${k ? "" : " open"}><summary><time>${fmtAt(o.at)}</time><strong>${esc(o.title)}</strong>${o.manual ? '<i>elle</i>' : '<i class="sch">planlı</i>'}<svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></summary><ul>${o.lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></details></li>`).join("") || `<li class="agf-empty">Henüz çıktı yok.</li>`;
+    <div class="pf-actions"><span class="pf-saved" role="status" data-ag-status></span><button type="submit" class="btn-primary">Kaydet</button></div>`;
+  $("[data-ag-outs]").innerHTML = st.outs.map((o, k) => `<li class="ago"><details${k ? "" : " open"}><summary><time>${fmtAt(o.at)}</time><strong>${esc(o.title)}</strong><i class="sch">kurum · planlı</i><svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></summary><ul>${o.lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></details></li>`).join("") || `<li class="agf-empty">Henüz çıktı yok.</li>`;
   $("[data-ag-info]").innerHTML = infoHtml(a);
   updNext(); setAgTab(tab); if (!dlg2.open) dlg2.showModal();
 };
@@ -312,23 +312,16 @@ const readForm = () => {
 };
 const updNext = () => { const f = $("[data-ag-freq] [aria-checked=true]").dataset.f, days = $$("[data-ag-days] [aria-pressed=true]").map((b) => +b.dataset.d), t = $("[data-ag-form]").saat.value;
   const nx = nextRun({ f, days: f === "haftalik" ? days : f === "haftaici" ? [0, 1, 2, 3, 4] : [0, 1, 2, 3, 4, 5, 6], t });
-  $("[data-ag-next]").innerHTML = f === "elle" ? "Plan yok. Ajanı istediğiniz zaman çalıştırırsınız." : nx ? `Plan: <b>${when(nx)}</b> ve sonrası. Bu sürümde plan kaydedilir; ajanı “Çalıştır” ile siz başlatırsınız.` : "En az bir gün seçin."; };
+  $("[data-ag-next]").innerHTML = f === "elle" ? "Plan yok; ajan çalışmaz." : nx ? `Sonraki çalışma: <b>${when(nx)}</b>. Kurum sistemi ajanı bu plana göre çalıştırır, çıktı bu sayfaya düşer.` : "En az bir gün seçin."; };
 $("[data-ag-form]").addEventListener("click", (e) => {
   const fb = e.target.closest("[data-f]"), db = e.target.closest("[data-d]"), ex = e.target.closest("[data-ex]");
   if (fb) { $$("[data-ag-freq] [data-f]").forEach((b) => b.setAttribute("aria-checked", String(b === fb)));
     if (fb.dataset.f === "haftalik" && $$("[data-ag-days] [aria-pressed=true]").length === 7) $$("[data-ag-days] [data-d]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.d === "0"))); $("[data-ag-days]").hidden = fb.dataset.f !== "haftalik"; $("[data-ag-time-wrap]").hidden = fb.dataset.f === "elle"; updNext(); }
   if (db) { db.setAttribute("aria-pressed", String(db.getAttribute("aria-pressed") !== "true")); updNext(); }
   if (ex) { const ta = $("[data-ag-form]").talimat; ta.value = ex.dataset.ex; ta.focus(); }
-  if (e.target.closest("[data-ag-run-dlg]")) { readForm(); runAg(agCur, true); }
 });
 $("[data-ag-form]").addEventListener("input", (e) => { if (e.target.name === "saat") updNext(); });
 $("[data-ag-form]").addEventListener("submit", (e) => { e.preventDefault(); readForm(); agSave(); renderAg(); const s = $("[data-ag-status]"); s.textContent = "Kaydedildi"; s.className = "pf-saved on"; setTimeout(() => s.classList.remove("on"), 2000); updNext(); });
-const runAg = (a, inDlg = false) => {
-  const st = agS(a), card = $(`[data-ag-id="${a.id}"] [data-ag-run]`);
-  if (card) { card.disabled = true; card.classList.add("busy"); card.innerHTML = `<span class="spin"></span>`; }
-  if (inDlg) { const s = $("[data-ag-status]"); s.textContent = "Çalışıyor…"; s.className = "pf-saved on"; }
-  setTimeout(() => { st.outs.unshift(mkOut(a, new Date(), true)); st.outs = st.outs.slice(0, 15); agSave(); renderAg(); if (inDlg) openAg(a.id, "cikti"); }, 1400);
-};
 $("[data-ag]").addEventListener("click", (e) => {
   const li = e.target.closest("[data-ag-id]"); if (!li) return; const a = AGENTS.find((x) => x.id === li.dataset.agId);
   if (e.target.closest("[data-ag-info-btn]")) {
@@ -336,10 +329,9 @@ $("[data-ag]").addEventListener("click", (e) => {
     pop.innerHTML = infoHtml(a) + `<button type="button" class="linkish" data-ag-pop-more="${a.id}">Ayarları aç</button>`;
     pop.hidden = false; pop.style.top = `${b.bottom - host.top + 8}px`; pop.style.left = `${Math.min(b.right - host.left - 300, host.width - 330)}px`; return;
   }
-  if (e.target.closest("[data-ag-run]")) return runAg(a);
   const op = e.target.closest("[data-ag-open]"); if (op) openAg(a.id, op.dataset.agOpen);
 });
-$("[data-ag]").addEventListener("change", (e) => { const t = e.target.closest("[data-ag-on]"); if (!t) return; agS(AGENTS.find((x) => x.id === t.closest("[data-ag-id]").dataset.agId)).on = t.checked; agSave(); renderAg(); });
+$("[data-ag]").addEventListener("change", (e) => { const t = e.target.closest("[data-ag-on]"); if (!t) return; const st = agS(AGENTS.find((x) => x.id === t.closest("[data-ag-id]").dataset.agId)); st.on = t.checked; if (t.checked) st.since = Date.now(); agSave(); renderAg(); });   // yeniden açılınca geçmiş için çıktı üretilmez
 $("[data-ag-feed]").addEventListener("click", (e) => { const b = e.target.closest("[data-ag-feed-open]"); if (b) openAg(b.dataset.agFeedOpen, "cikti"); });
 document.addEventListener("click", (e) => { if (!pop.hidden && !e.target.closest("[data-ag-pop]")) pop.hidden = true; const m = e.target.closest("[data-ag-pop-more]"); if (m) { pop.hidden = true; openAg(m.dataset.agPopMore, "ayar"); } });
 $$("[data-agtab]").forEach((b) => b.addEventListener("click", () => setAgTab(b.dataset.agtab)));

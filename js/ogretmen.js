@@ -182,7 +182,6 @@ $("[data-aj]").innerHTML = AGENTS.map(([art, t, d, when, on, runs], i) => { cons
     <label class="tg aj-tg"><input type="checkbox" role="switch" ${on ? "checked" : ""} aria-label="${t} açık"><i aria-hidden="true"></i></label></div>
   <button type="button" class="btn-ghost aj-run" data-run="${t}">Şimdi çalıştır</button></li>`; }).join("");
 $("[data-aj]").addEventListener("click", (e) => { const b = e.target.closest("[data-run]"); if (!b) return; b.textContent = "Çalışıyor…"; b.disabled = true; setTimeout(() => { b.textContent = "Tamamlandı · Koleksiyona eklendi"; }, 1200); });
-$("[data-aj-new]").addEventListener("click", () => { location.hash = "araclar"; });
 
 /* ---------- ekosistem ve topluluk (öğrenci paneliyle aynı) ---------- */
 const ECO = [

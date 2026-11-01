@@ -22,8 +22,7 @@
     .shots-head p { margin: 0; color: var(--ink-3); font-size: 15px; }
     .shots-grid { display: grid; gap: 24px; list-style: none; margin: 0; padding: 0; }
     @media (min-width: 900px) { .shots-grid { grid-template-columns: repeat(3, 1fr); } }
-    .shot a { display: block; color: inherit; text-decoration: none; border-radius: var(--r-lg); }
-    .shot-frame { position: relative; border-radius: 18px; overflow: hidden; background: #f6f7fc; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .85), 0 0 0 1px var(--line-2); transition: transform var(--m-u) var(--m-out), box-shadow var(--m-u) var(--m-out); }
+    .shot-frame { position: relative; border-radius: 18px; overflow: hidden; background: #f6f7fc; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .85), 0 0 0 1px var(--line-2); }
     .shot-frame::before { content: ""; display: block; height: 22px; background: #eceef6 radial-gradient(circle at 14px 11px, #f26b6b 3.5px, transparent 4px), #eceef6; border-bottom: 1px solid #dfe2ee; }
     .shot-frame::after { content: ""; position: absolute; top: 8px; left: 26px; width: 7px; height: 7px; border-radius: 50%; background: #f3b45b; box-shadow: 12px 0 0 #6ccf8e; }
     .shot-frame img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
@@ -32,11 +31,36 @@
     .shot-cap .role { flex: none; margin-right: 100%; padding: 5px 10px; border-radius: 999px; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--s2); background: rgba(143, 166, 255, .12); border: 1px solid rgba(143, 166, 255, .25); }
     .shot-cap strong { display: block; font: 700 17px/1.25 var(--display); letter-spacing: -0.02em; }
     .shot-cap small { display: block; margin-top: 4px; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
-    .shot-cap .go { margin-left: auto; flex: none; width: 18px; height: 18px; margin-top: 2px; color: var(--ink-3); transition: transform var(--m-u) var(--m-out), color var(--m-u); }
-    .shot a:hover .shot-frame, .shot a:focus-visible .shot-frame { transform: translateY(-6px); box-shadow: 0 40px 70px -30px rgba(0, 0, 0, .9), 0 0 0 1px var(--s2); }
-    .shot a:hover .go, .shot a:focus-visible .go { transform: translateX(4px); color: var(--ink); }
-    .shot a:focus-visible { outline: 2px solid var(--s2); outline-offset: 6px; }
-    @media (prefers-reduced-motion: reduce) { .shot-frame, .shot-cap .go { transition: none; } }
+    /* v2: Mini CRM panel ekranlarının dilinde: açık zemin, beyaz 20px kartlar, yumuşak gölge, pencere çubuğu */
+    .crm-v2 { --p-ink: #11142c; --p-ink-2: #4b5170; --p-ink-3: #5f6580; --p-line: #e8eaf4; --p-shadow: 0 1px 2px rgba(17, 20, 44, .03), 0 10px 30px -18px rgba(40, 50, 120, .22);
+      position: relative; padding: 0; overflow: hidden; border-radius: 18px; background: #f6f7fd; color: var(--p-ink); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .85), 0 0 0 1px var(--line-2); }
+    .crm-v2::before { content: ""; display: block; height: 22px; background: radial-gradient(circle at 14px 11px, #f26b6b 3.5px, transparent 4px), #eceef6; border-bottom: 1px solid #dfe2ee; }
+    .crm-v2::after { content: ""; position: absolute; top: 8px; left: 26px; width: 7px; height: 7px; border-radius: 50%; background: #f3b45b; box-shadow: 12px 0 0 #6ccf8e; }
+    .crm-v2 > * { margin-inline: 22px; }
+    .crm-v2 .crm-head { margin-top: 20px; }
+    .crm-v2 .crm-icon { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, #345de0, #7b5cf0); box-shadow: 0 10px 20px -10px rgba(80, 73, 220, .7); }
+    .crm-v2 .crm-head strong { font: 800 20px/1.15 var(--display); letter-spacing: -0.03em; }
+    .crm-v2 .crm-head small { color: var(--p-ink-3); }
+    .crm-v2 .pill-ok { background: #e6f6ef; color: #047857; }
+    .crm-v2 .crm-stats { gap: 12px; margin-top: 18px; padding: 0; border: 0; }
+    .crm-v2 .crm-stats div { gap: 2px; padding: 14px 16px; border: 1px solid rgba(17, 20, 44, .06); border-radius: 20px; background: #fff; box-shadow: var(--p-shadow); }
+    .crm-v2 .crm-stats div:first-child { padding-left: 16px; border: 1px solid rgba(17, 20, 44, .06); }
+    .crm-v2 .crm-stats dd { font: 800 clamp(22px, 1vw + 14px, 28px)/1.1 var(--display); letter-spacing: -0.035em; }
+    .crm-v2 .crm-stats dt { font-size: 13px; font-weight: 600; color: var(--p-ink-3); }
+    .crm-v2 .crm-list { margin-top: 12px; padding: 4px 16px; border: 1px solid rgba(17, 20, 44, .06); border-radius: 20px; background: #fff; box-shadow: var(--p-shadow); }
+    .crm-v2 .crm-list li { border-color: var(--p-line); }
+    .crm-v2 .crm-list li:last-child { border-bottom: 0; }
+    .crm-v2 .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, #345de0, #7b5cf0); color: #fff; }
+    .crm-v2 .crm-list li:nth-child(2) .avatar { background: linear-gradient(135deg, #7b5cf0, #c05cd8); }
+    .crm-v2 .crm-list li:nth-child(3) .avatar { background: linear-gradient(135deg, #2a9d8f, #345de0); }
+    .crm-v2 .who strong { font-weight: 700; }
+    .crm-v2 .who em { margin-left: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-style: normal; font-weight: 600; color: #2a4bc0; background: #eef2fd; }
+    .crm-v2 .who small { color: var(--p-ink-3); }
+    .crm-v2 .ok { padding: 4px 9px; border-radius: 999px; background: #e6f6ef; font-size: 12.5px; }
+    .crm-v2 .ok .icon { width: 14px; height: 14px; }
+    .crm-v2 .crm-note { margin-block: 12px 22px; padding: 12px 14px; border-radius: 14px; background: #f3effe; color: var(--p-ink-2); }
+    .crm-v2 .crm-note .icon { color: #7b5cf0; }
+    @media (max-width: 479px) { .crm-v2 > * { margin-inline: 14px; } .crm-v2 .crm-stats { gap: 8px; } .crm-v2 .crm-stats div { padding: 12px; } .crm-v2 .crm-stats div:first-child { padding-left: 12px; } }
   </style>
 </head>
 <body>
@@ -203,7 +227,7 @@
           </li>
         </ol>
 
-        <figure class="panel crm">
+        <figure class="panel crm crm-v2">
           <figcaption class="crm-head">
             <span class="crm-icon"><svg class="icon" aria-hidden="true"><use href="#i-inbox" /></svg></span>
             <span><strong>Mini CRM</strong><small>Yönetici paneli · bugün</small></span>
@@ -217,17 +241,17 @@
           <ul class="crm-list">
             <li>
               <span class="avatar">A</span>
-              <span class="who"><strong>Ayşe K. <em>· Bilgi talebi</em></strong><small>Ortaokul · 2 dk önce</small></span>
+              <span class="who"><strong>Ayşe K. <em>Bilgi talebi</em></strong><small>Ortaokul · 2 dk önce</small></span>
               <span class="ok"><svg class="icon" aria-hidden="true"><use href="#i-circle-check" /></svg>Aydınlatma</span>
             </li>
             <li>
               <span class="avatar">M</span>
-              <span class="who"><strong>Mert D. <em>· Yarışma</em></strong><small>Kod: OKUL-2026-K4F · 18 dk önce</small></span>
+              <span class="who"><strong>Mert D. <em>Yarışma</em></strong><small>Kod: OKUL-2026-K4F · 18 dk önce</small></span>
               <span class="ok"><svg class="icon" aria-hidden="true"><use href="#i-circle-check" /></svg>Veli onayı</span>
             </li>
             <li>
               <span class="avatar">S</span>
-              <span class="who"><strong>Selin A. <em>· Bilgi talebi</em></strong><small>Lise · 1 sa önce</small></span>
+              <span class="who"><strong>Selin A. <em>Bilgi talebi</em></strong><small>Lise · 1 sa önce</small></span>
               <span class="ok"><svg class="icon" aria-hidden="true"><use href="#i-circle-check" /></svg>Ticari ileti</span>
             </li>
           </ul>
@@ -235,33 +259,6 @@
         </figure>
       </div>
 
-      <!-- v2: giriş sonrası üç panelin gerçek ekranları (assets/paneller, 1440x900 çekim) -->
-      <div class="shots" aria-labelledby="h-shots">
-        <div class="shots-head">
-          <h3 id="h-shots">Giriş yapınca herkes kendi paneline düşer.</h3>
-          <p>Demo panelleri açmak için ekrana tıklayın.</p>
-        </div>
-        <ul class="shots-grid">
-          <li class="shot">
-            <a href="panel.html" target="_blank" rel="noopener">
-              <div class="shot-frame"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" loading="lazy" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı ve son aktiviteler" /></div>
-              <div class="shot-cap"><span class="role">Öğrenci</span><span><strong>Haftanın görevi ve araçları</strong><small>Beceri puanı, son aktiviteler, AI-LA sohbeti.</small></span><svg class="icon go" aria-hidden="true"><use href="#i-arrow-right" /></svg></div>
-            </a>
-          </li>
-          <li class="shot">
-            <a href="ogretmen.html" target="_blank" rel="noopener">
-              <div class="shot-frame"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" loading="lazy" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></div>
-              <div class="shot-cap"><span class="role">Öğretmen</span><span><strong>Ders tahtası ve sınıflar</strong><small>Ders planı, sınav, rubrik; sınıf beceri haritası.</small></span><svg class="icon go" aria-hidden="true"><use href="#i-arrow-right" /></svg></div>
-            </a>
-          </li>
-          <li class="shot">
-            <a href="yonetici.html" target="_blank" rel="noopener">
-              <div class="shot-frame"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" loading="lazy" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></div>
-              <div class="shot-cap"><span class="role">Yönetici</span><span><strong>Kurum raporu</strong><small>Uyarılar, AI kullanımı, kademeler, ekosistem verisi.</small></span><svg class="icon go" aria-hidden="true"><use href="#i-arrow-right" /></svg></div>
-            </a>
-          </li>
-        </ul>
-      </div>
     </div>
   </section>
 
@@ -324,6 +321,34 @@
             <li><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg><h4>Kredi &amp; Rapor</h4><p>Lisans, kullanım, maliyet ve performans.</p></li>
           </ul>
         </div>
+      </div>
+
+      <!-- v2: giriş sonrası üç panelin gerçek ekranları (assets/paneller, 1440x900 çekim) -->
+      <div class="shots" aria-labelledby="h-shots">
+        <div class="shots-head">
+          <h3 id="h-shots">Giriş yapınca herkes kendi paneline düşer.</h3>
+          <p>Demo panellerden gerçek ekranlar.</p>
+        </div>
+        <ul class="shots-grid">
+          <li class="shot">
+            <div class="shot-in">
+              <div class="shot-frame"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" loading="lazy" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı ve son aktiviteler" /></div>
+              <div class="shot-cap"><span class="role">Öğrenci</span><span><strong>Haftanın görevi ve araçları</strong><small>Beceri puanı, son aktiviteler, AI-LA sohbeti.</small></span></div>
+            </div>
+          </li>
+          <li class="shot">
+            <div class="shot-in">
+              <div class="shot-frame"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" loading="lazy" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></div>
+              <div class="shot-cap"><span class="role">Öğretmen</span><span><strong>Ders tahtası ve sınıflar</strong><small>Ders planı, sınav, rubrik; sınıf beceri haritası.</small></span></div>
+            </div>
+          </li>
+          <li class="shot">
+            <div class="shot-in">
+              <div class="shot-frame"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" loading="lazy" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></div>
+              <div class="shot-cap"><span class="role">Yönetici</span><span><strong>Kurum raporu</strong><small>Uyarılar, AI kullanımı, kademeler, ekosistem verisi.</small></span></div>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </section>

@@ -16,7 +16,7 @@
   <script type="module" src="js/carousel.js"></script>
   <style>
     /* v2: her rol sekmesinde o panelin gerçek ekranı */
-    .role-shot { margin: 24px 0 0; overflow: hidden; border-radius: 16px; background: #f6f7fd; box-shadow: 0 0 0 1px #e6e8f2, 0 24px 48px -30px rgba(40, 50, 120, .35); }
+    .role-shot { margin: 0; overflow: hidden; border-radius: 16px; background: #f6f7fd; box-shadow: 0 0 0 1px #e6e8f2, 0 24px 48px -30px rgba(40, 50, 120, .35); }
     .role-shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
 
     /* v2: Mini CRM öğrenci panelinin dilinde: arama + selam çubuğu, okul renginden mora kart (Kendini Tanı), Son Aktiviteler listesi */
@@ -295,20 +295,14 @@
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-ogrenci" aria-labelledby="tab-ogrenci" tabindex="0" data-profile="Öğrenci profili">
-          <h3>Menüler arasında kaybolmadan, kendi okulunun AI dünyasında.</h3>
-          <p>Öğrenci giriş yaptığında doğrudan kurumunun AI ekosistemini görür. Araçlar, sohbet ve görevler; düzeyine ve eksik alanlarına göre bireyselleşir.</p>
           <figure class="role-shot"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" decoding="async" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı ve son aktiviteler" /></figure>
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-ogretmen" aria-labelledby="tab-ogretmen" tabindex="0" data-profile="Öğretmen profili" hidden>
-          <h3>Ders planından sınav okumaya, öğretmenin AI çalışma alanı.</h3>
-          <p>Öğretmen; araç, chat, akış ve ajanlara ek olarak whiteboard ve sınıf yönetimine ulaşır. AI destekli ölçme-değerlendirme süreçleri ekosistem içinde desteklenir.</p>
           <figure class="role-shot"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" decoding="async" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></figure>
         </div>
 
         <div class="tabpanel" role="tabpanel" id="panel-yonetici" aria-labelledby="tab-yonetici" tabindex="0" data-profile="Yönetici profili" hidden>
-          <h3>Kurumun yapay zekâ ekosistemini tek merkezden yönetin.</h3>
-          <p>Kullanıcıları, AI politikalarını, ajanları, krediyi ve kurumsal hafızayı yönetin. Köprü ile bağlı platformlardan gelen veriyi standart biçimde analiz edin.</p>
           <figure class="role-shot"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" decoding="async" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></figure>
         </div>
       </div>

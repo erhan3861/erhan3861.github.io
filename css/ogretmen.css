@@ -79,6 +79,7 @@
 /* tam ekran: Fullscreen API ya da sayfayı kaplayan sınıf; Esc ile küçülür */
 .page.wb:fullscreen, .page.wb.wb-max { position: fixed; inset: 0; z-index: 300; padding: 14px 16px 16px; margin: 0; background: var(--bg); }
 .page.wb:fullscreen .wb-back, .page.wb.wb-max .wb-back { display: none; }
+.page.wb:fullscreen .wb-top, .page.wb.wb-max .wb-top { grid-template-columns: 1fr auto; }
 .page.wb:fullscreen .wb-io, .page.wb.wb-max .wb-io { right: 14px; }
 body.wb-on .chat { display: none; }
 @media (max-width: 1180px) { .wb-hint { display: none; } .wb-io button { font-size: 0; gap: 0; } }

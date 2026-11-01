@@ -73,6 +73,19 @@
       .ca-thumb { width: 44px; height: 44px; }
       .ca-ok { grid-column: 2; justify-self: start; }
     }
+    /* yükseklik soldaki üç yolla eşit: kart sütunu doldurur, liste kalan yeri alır */
+    @media (min-width: 1024px) { #okul-sayfasi .paths-grid { align-items: stretch; } .crm-app { height: 100%; grid-template-rows: auto 1fr; } }
+    .crm-app { gap: 12px; padding: 16px; }
+    .ca-kt { gap: 8px; padding: 18px 20px; }
+    .ca-score strong { font-size: 36px; }
+    .ca-mini { display: flex; gap: 8px; margin-top: 4px; }
+    .ca-mini > span { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .16); font-size: 12.5px; color: rgba(255, 255, 255, .85); }
+    .ca-mini b { font: 800 15px/1 var(--display); color: #fff; letter-spacing: -0.02em; }
+    .ca-acts { align-content: start; gap: 10px; padding: 16px 18px; }
+    .ca-acts ul { gap: 10px; }
+    .ca-acts li { grid-template-columns: 44px 1fr auto; }
+    .ca-thumb { width: 44px; height: 44px; border-radius: 12px; }
+    .ca-thumb .icon { width: 20px; height: 20px; }
   </style>
 </head>
 <body>
@@ -240,20 +253,12 @@
         </ol>
 
         <figure class="crm-app" aria-label="Mini CRM, yönetici paneli örneği">
-          <div class="ca-top" aria-hidden="true">
-            <span class="ca-search"><svg class="icon"><use href="#i-inbox" /></svg>Başvuru veya veli ara...</span>
-            <span class="ca-hello"><span class="ca-av">AB</span><span><small>Merhaba,</small><b>Adil Bey</b></span></span>
-          </div>
           <div class="ca-kt">
             <span class="ca-kt-top"><span>Mini CRM · bugün</span><span class="ca-new">+12 yeni</span></span>
             <span class="ca-score"><strong>48</strong><span>veli talebi</span></span>
             <span class="ca-bars" aria-hidden="true"><i style="--p:100%"></i><i style="--p:100%"></i><i style="--p:100%"></i><i style="--p:100%"></i><i style="--p:60%"></i><i style="--p:0%"></i></span>
-            <span class="ca-btn">Başvuruları aç<svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg></span>
+            <span class="ca-mini"><span><b>126</b>yarışmacı</span><span><b>%71</b>ticari izin</span></span>
           </div>
-          <dl class="ca-kpis">
-            <div><dt>Yarışmacı</dt><dd>126</dd></div>
-            <div><dt>Ticari izin</dt><dd>%71</dd></div>
-          </dl>
           <section class="ca-acts" aria-label="Son başvurular">
             <div class="ca-head"><strong>Son Başvurular</strong><span>Tümünü Gör<svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg></span></div>
             <ul>
@@ -262,7 +267,6 @@
               <li><span class="ca-thumb t3"><svg class="icon" aria-hidden="true"><use href="#i-building2" /></svg></span><span class="ca-text"><strong>Selin A. · Bilgi talebi</strong><span>Lise · 1 sa önce</span></span><span class="ca-ok"><svg class="icon" aria-hidden="true"><use href="#i-circle-check" /></svg>Ticari ileti</span></li>
             </ul>
           </section>
-          <p class="ca-note"><svg class="icon" aria-hidden="true"><use href="#i-info" /></svg>Yarışmaya katılım pazarlama iznine bağlı değildir. Çocuklara ait bilgiler pazarlama amacıyla otomatik kullanılmaz.</p>
         </figure>
       </div>
 

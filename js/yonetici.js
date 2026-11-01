@@ -248,23 +248,28 @@ const catchUp = () => AGENTS.forEach((a) => {
 });
 const fmtAt = (ms) => { const d = new Date(ms); return `${d.toDateString() === new Date().toDateString() ? "Bugün" : d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" })} ${d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`; };
 const agArt = (a, i) => { const [hue, tint] = hues[i % 4]; return `style="--hue:${hue};--tint:${tint}"><img src="assets/araclar/t${String(a.art).padStart(2, "0")}.png" alt=""`; };
+// v1: plan kaydedilir, ajan elle çalıştırılır (otomatik çalışma sonraki sürüm). Kart sade: kimlik, plan, tek oynat düğmesi.
+const PLAY = '<svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>';
 const renderAg = () => {
-  catchUp(); agSave();
-  $("[data-ag]").innerHTML = AGENTS.map((a, i) => { const st = agS(a), nx = st.on ? nextRun(st.sched) : null, last = st.outs[0];
-    return `<li class="ag ${st.on ? "" : "off"}" data-ag-id="${a.id}">
-      <div class="ag-h"><span class="tool-art" ${agArt(a, i)}></span><div class="ag-t"><strong>${a.name}</strong><span>${a.desc}</span></div>
-        <button type="button" class="ag-i" aria-label="${a.name} ne yapar?" title="Ne yapar?" data-ag-info-btn><svg class="icon"><use href="#i-info" /></svg></button></div>
-      <div class="ag-sched"><svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg><span><b>${schedText(st.sched)}</b><small>${st.on ? (nx ? `Sonraki çalışma: ${when(nx)}` : "Planlı çalışma yok") : "Duraklatıldı"}</small></span>
-        <label class="tg aj-tg"><input type="checkbox" role="switch" ${st.on ? "checked" : ""} aria-label="${a.name} açık" data-ag-on><i aria-hidden="true"></i></label></div>
-      <div class="ag-last">${last ? `<span class="agl-h"><svg class="icon" aria-hidden="true"><use href="#i-clock" /></svg>Son çıktı · ${fmtAt(last.at)}${last.manual ? " · elle" : ""}</span><strong>${esc(last.title)}</strong><p>${esc(last.lines[0])}</p><button type="button" class="linkish" data-ag-open="cikti">Çıktıyı aç</button>`
-        : `<span class="agl-h">Henüz çıktı yok</span><p>${st.sched.f === "elle" ? "Girdileri doldurup “Şimdi çalıştır” deyin." : "İlk planlı çalışmada burada görünecek."}</p>`}</div>
-      <div class="ag-foot"><button type="button" class="btn-ghost sm" data-ag-open="ayar"><svg class="icon" aria-hidden="true"><use href="#i-pen" /></svg>Ayarlar ve talimat</button><button type="button" class="btn-primary sm ag-run" data-ag-run><svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>Şimdi çalıştır</button></div>
+  agSave();
+  $("[data-ag]").innerHTML = AGENTS.map((a, i) => { const st = agS(a), last = st.outs[0];
+    return `<li class="ag" data-ag-id="${a.id}">
+      <button type="button" class="ag-main" data-ag-open="ayar" aria-label="${a.name} ayarları">
+        <span class="tool-art" ${agArt(a, i)}></span>
+        <span class="ag-t"><strong>${a.name}</strong><span>${a.desc}</span></span>
+      </button>
+      <button type="button" class="ag-i" aria-label="${a.name} ne yapar?" title="Ne yapar?" data-ag-info-btn><svg class="icon"><use href="#i-info" /></svg></button>
+      <div class="ag-row">
+        <button type="button" class="ag-plan${st.sched.f === "elle" ? " none" : ""}" data-ag-open="ayar">${st.sched.f === "elle" ? "Plan yok" : schedText(st.sched)}</button>
+        <button type="button" class="ag-play" aria-label="${a.name} çalıştır" title="Çalıştır" data-ag-run>${PLAY}</button>
+      </div>
+      ${last ? `<button type="button" class="ag-out" data-ag-open="cikti"><span>${fmtAt(last.at)}</span><b>${esc(last.title)}</b>${ARROW}</button>` : ""}
     </li>`; }).join("");
-  const today = new Date().toDateString(), feed = AGENTS.flatMap((a) => agS(a).outs.filter((o) => new Date(o.at).toDateString() === today).map((o) => ({ a, o }))).sort((x, y) => y.o.at - x.o.at);
-  $("[data-ag-feed-sub]").textContent = feed.length ? `${feed.length} çıktı · ${new Date().toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" })}` : "Bugün henüz çıktı yok";
-  $("[data-ag-feed]").innerHTML = feed.map(({ a, o }) => `<li><button type="button" class="agf" data-ag-feed-open="${a.id}"><time>${new Date(o.at).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}</time><span><small>${a.name}</small><strong>${esc(o.title)}</strong></span>${ARROW}</button></li>`).join("") || `<li class="agf-empty">Ajanlar planlı saatlerinde çalıştıkça çıktılar burada toplanır.</li>`;
-  const on = AGENTS.filter((a) => agS(a).on && agS(a).sched.f !== "elle").length;
-  $("[data-ag-today]").innerHTML = `<svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>${on} ajan zamanlı çalışıyor`;
+  const feed = AGENTS.flatMap((a) => agS(a).outs.map((o) => ({ a, o }))).sort((x, y) => y.o.at - x.o.at).slice(0, 12);
+  $("[data-ag-feed-sub]").textContent = feed.length ? `${feed.length} çıktı` : "Henüz çıktı yok";
+  $("[data-ag-feed]").innerHTML = feed.map(({ a, o }) => `<li><button type="button" class="agf" data-ag-feed-open="${a.id}"><time>${fmtAt(o.at).replace("Bugün ", "")}</time><span><small>${a.name}</small><strong>${esc(o.title)}</strong></span>${ARROW}</button></li>`).join("") || `<li class="agf-empty">Bir ajanı çalıştırdığınızda çıktısı burada görünür.</li>`;
+  const planned = AGENTS.filter((a) => agS(a).sched.f !== "elle").length;
+  $("[data-ag-today]").textContent = `${planned} ajanın planı kayıtlı`;
 };
 // ⓘ bilgi kutusu
 const pop = $("[data-ag-pop]");
@@ -283,7 +288,7 @@ const openAg = (id, tab = "ayar") => {
   $("[data-agd-art]").outerHTML = `<span class="tool-art" data-agd-art ${agArt(a, i)}></span>`;
   $("[data-agd-name]").textContent = a.name; $("[data-agd-desc]").textContent = a.desc; $("[data-agd-count]").textContent = st.outs.length;
   $("[data-ag-form]").innerHTML = `
-    <section class="agd-sec"><h3><svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg>Ne zaman çalışsın?</h3>
+    <section class="agd-sec"><h3><svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg>Plan</h3>
       <div class="seg-tabs sm" role="radiogroup" aria-label="Sıklık" data-ag-freq>${FREQ.map(([k, l]) => `<button type="button" role="radio" aria-checked="${k === st.sched.f}" data-f="${k}">${l}</button>`).join("")}</div>
       <div class="ag-days" data-ag-days ${st.sched.f === "haftalik" ? "" : "hidden"}>${GUN.map((g, j) => `<button type="button" aria-pressed="${st.sched.days.includes(j)}" data-d="${j}">${g}</button>`).join("")}</div>
       <label class="fld ag-time" ${st.sched.f === "elle" ? "hidden" : ""} data-ag-time-wrap><span>Saat</span><input type="time" name="saat" value="${st.sched.t}" step="900"></label>
@@ -292,7 +297,7 @@ const openAg = (id, tab = "ayar") => {
     <section class="agd-sec"><h3><svg class="icon" aria-hidden="true"><use href="#i-chat" /></svg>Talimat <small>isteğe bağlı</small></h3>
       <textarea name="talimat" rows="2" maxlength="300" placeholder="Örneğin: ${TALIMAT_ORNEK[a.id][0]}">${esc(st.talimat)}</textarea>
       <div class="ag-ex">${TALIMAT_ORNEK[a.id].map((t) => `<button type="button" class="apill" data-ex="${esc(t)}">${t}</button>`).join("")}</div></section>
-    <div class="pf-actions"><span class="pf-saved" role="status" data-ag-status></span><button type="button" class="btn-ghost" data-ag-run-dlg><svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>Kaydet ve şimdi çalıştır</button><button type="submit" class="btn-primary">Kaydet</button></div>`;
+    <div class="pf-actions"><span class="pf-saved" role="status" data-ag-status></span><button type="submit" class="btn-ghost">Kaydet</button><button type="button" class="btn-primary ag-runbtn" data-ag-run-dlg><svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>Kaydet ve çalıştır</button></div>`;
   $("[data-ag-outs]").innerHTML = st.outs.map((o, k) => `<li class="ago"><details${k ? "" : " open"}><summary><time>${fmtAt(o.at)}</time><strong>${esc(o.title)}</strong>${o.manual ? '<i>elle</i>' : '<i class="sch">planlı</i>'}<svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></summary><ul>${o.lines.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></details></li>`).join("") || `<li class="agf-empty">Henüz çıktı yok.</li>`;
   $("[data-ag-info]").innerHTML = infoHtml(a);
   updNext(); setAgTab(tab); if (!dlg2.open) dlg2.showModal();
@@ -306,7 +311,7 @@ const readForm = () => {
 };
 const updNext = () => { const f = $("[data-ag-freq] [aria-checked=true]").dataset.f, days = $$("[data-ag-days] [aria-pressed=true]").map((b) => +b.dataset.d), t = $("[data-ag-form]").saat.value;
   const nx = nextRun({ f, days: f === "haftalik" ? days : f === "haftaici" ? [0, 1, 2, 3, 4] : [0, 1, 2, 3, 4, 5, 6], t });
-  $("[data-ag-next]").innerHTML = f === "elle" ? "Ajan yalnız siz “Şimdi çalıştır” dediğinizde çalışır." : nx ? `Sonraki çalışma: <b>${when(nx)}</b>. Çıktı bu sayfaya ve “Bu sabahın çıktıları” akışına düşer.` : "En az bir gün seçin."; };
+  $("[data-ag-next]").innerHTML = f === "elle" ? "Plan yok. Ajanı istediğiniz zaman çalıştırırsınız." : nx ? `Plan: <b>${when(nx)}</b> ve sonrası. Bu sürümde plan kaydedilir; ajanı “Çalıştır” ile siz başlatırsınız.` : "En az bir gün seçin."; };
 $("[data-ag-form]").addEventListener("click", (e) => {
   const fb = e.target.closest("[data-f]"), db = e.target.closest("[data-d]"), ex = e.target.closest("[data-ex]");
   if (fb) { $$("[data-ag-freq] [data-f]").forEach((b) => b.setAttribute("aria-checked", String(b === fb)));
@@ -319,7 +324,7 @@ $("[data-ag-form]").addEventListener("input", (e) => { if (e.target.name === "sa
 $("[data-ag-form]").addEventListener("submit", (e) => { e.preventDefault(); readForm(); agSave(); renderAg(); const s = $("[data-ag-status]"); s.textContent = "Kaydedildi"; s.className = "pf-saved on"; setTimeout(() => s.classList.remove("on"), 2000); updNext(); });
 const runAg = (a, inDlg = false) => {
   const st = agS(a), card = $(`[data-ag-id="${a.id}"] [data-ag-run]`);
-  if (card) { card.disabled = true; card.innerHTML = `<span class="spin"></span>Çalışıyor…`; }
+  if (card) { card.disabled = true; card.classList.add("busy"); card.innerHTML = `<span class="spin"></span>`; }
   if (inDlg) { const s = $("[data-ag-status]"); s.textContent = "Çalışıyor…"; s.className = "pf-saved on"; }
   setTimeout(() => { st.outs.unshift(mkOut(a, new Date(), true)); st.outs = st.outs.slice(0, 15); agSave(); renderAg(); if (inDlg) openAg(a.id, "cikti"); }, 1400);
 };
@@ -340,7 +345,6 @@ $$("[data-agtab]").forEach((b) => b.addEventListener("click", () => setAgTab(b.d
 $("[data-agd-close]").addEventListener("click", () => dlg2.close());
 dlg2.addEventListener("click", (e) => { if (e.target === dlg2) dlg2.close(); });
 renderAg();
-setInterval(() => { if (view === "ajanlar") renderAg(); }, 60000);   // planlı saat gelince çıktı kendiliğinden düşer
 
 /* ---------- kurum yönetimi: sınıf + öğrenci ---------- */
 let lvl = "tum", clsQ = "", ogrF = "tum", ogrQ = "", ogrCls = "";

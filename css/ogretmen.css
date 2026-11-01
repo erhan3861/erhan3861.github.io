@@ -1,24 +1,17 @@
 /* AI-LA öğretmen paneli: panel.css'in üstüne yalnız öğretmene özel bölümler.
    Whiteboard kartı ve sayfası, sınıfların durumu, koleksiyon, ajanlar, öğrencilerim, beceri haritası. */
 
-/* ---------- ana sayfa: whiteboard kartı (öğrencideki görev karuselinin yerinde) ---------- */
-.wb-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: 24px; overflow: hidden; padding: clamp(20px, 3.4vh, 36px) clamp(24px, 3vw, 44px); border-radius: 26px;
-  background: radial-gradient(70% 90% at 100% 0%, color-mix(in oklab, var(--v) 18%, transparent), transparent 60%), linear-gradient(135deg, #fff 30%, var(--s-tint)); border: 1px solid rgba(17, 20, 44, .06); box-shadow: var(--shadow); }
-.wbh-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); font-size: 13px; font-weight: 600; color: var(--s-ink); }
-.wbh-tag .icon { width: 16px; height: 16px; }
-.wbh-copy h2 { margin-top: 14px; font: 800 clamp(1.6rem, 1rem + 1.4vw, 2.4rem)/1.08 var(--display); letter-spacing: -0.035em; }
-.wbh-copy h2 em { font-style: normal; color: var(--s); }
-.wbh-copy p { margin-top: 12px; max-width: 46ch; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
-.wbh-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: clamp(16px, 2.6vh, 26px); }
-.wbh-btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; border-radius: 24px; box-shadow: 0 12px 24px -12px color-mix(in oklab, var(--s) 80%, transparent); text-decoration: none; }
-.wbh-btn .icon { width: 18px; height: 18px; }
-.wbh-last { font-size: 13px; color: var(--ink-3); }
-.wbh-art { display: grid; place-items: center; min-height: 0; height: 100%; }
-.wbh-board { position: relative; width: min(100%, 420px); aspect-ratio: 16 / 10; border-radius: 20px; background: #fff radial-gradient(circle, #dfe3f1 1.2px, transparent 1.4px) 0 0 / 18px 18px; box-shadow: 0 1px 2px rgba(17, 20, 44, .05), 0 26px 50px -28px rgba(40, 50, 120, .45); transform: rotate(-2deg); }
-.wbh-sketch { position: absolute; inset: 8% 6%; width: 88%; height: 84%; color: var(--s); }
-.wbh-note { position: absolute; padding: 10px 14px; border-radius: 10px; font: 600 14px/1.2 var(--font); color: var(--ink); box-shadow: 0 10px 20px -12px rgba(40, 50, 120, .45); }
-.wbh-note.n1 { right: 8%; top: 12%; background: #fff4c2; transform: rotate(4deg); }
-.wbh-note.n2 { left: 10%; bottom: 10%; background: #f3e8ff; transform: rotate(-3deg); }
+/* ---------- ana sayfa sağ sütun: whiteboard kartı (öğrencide haftanın görevinin durduğu yer) ---------- */
+.wb-card { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 10px 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r); background: linear-gradient(140deg, #fff 40%, var(--s-tint)); box-shadow: var(--shadow); transition: transform .25s var(--ease), box-shadow .25s; }
+.wb-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(17, 20, 44, .03), 0 20px 36px -22px rgba(40, 50, 120, .32); }
+.wbc-board { position: relative; grid-row: span 2; display: block; width: clamp(84px, 11vh, 104px); aspect-ratio: 12 / 8; border-radius: 12px; background: #fff radial-gradient(circle, #dfe3f1 1px, transparent 1.2px) 0 0 / 10px 10px; box-shadow: 0 0 0 1px var(--line), 0 10px 20px -14px rgba(40, 50, 120, .5); color: var(--s); transform: rotate(-3deg); }
+.wbc-board svg { position: absolute; inset: 10%; width: 80%; height: 80%; }
+.wbc-note { position: absolute; right: -6px; top: -6px; padding: 3px 6px; border-radius: 6px; background: #fff4c2; font: 700 10px/1 var(--font); font-style: normal; color: var(--ink); box-shadow: 0 4px 8px -4px rgba(40, 50, 120, .4); transform: rotate(6deg); }
+.wbc-t { display: grid; gap: 2px; min-width: 0; }
+.wbc-t strong { font: 700 16px/1.2 var(--display); letter-spacing: -0.015em; }
+.wbc-t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--ink-3); }
+.wbc-go { display: inline-flex; align-items: center; justify-self: start; gap: 6px; height: 34px; padding: 0 14px; border-radius: 17px; background: var(--s); color: #fff; font-size: 13px; font-weight: 600; }
+.wbc-go .icon { width: 15px; height: 15px; }
 
 /* sağ sütun: sınıfların durumu */
 .cls-mini ul { gap: 10px; }
@@ -234,7 +227,5 @@ a.bm-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(17, 20
   .pf-col.forms2 { grid-template-rows: none; }
 }
 @media (max-width: 1080px) {
-  .wb-hero { grid-template-columns: 1fr; }
-  .wbh-art { display: none; }
   .wb-tools { flex-wrap: wrap; justify-content: center; width: calc(100% - 24px); }
 }

@@ -1,16 +1,16 @@
 // Ana sayfadaki "bu hafta" karuseli ve #gorev/<id> görev sayfası. İçerik js/hafta.js'ten gelir.
 import { HAFTA } from "./hafta.js";
 
-const ARROW = '<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>';
-const ico = (id) => `<svg class="icon" aria-hidden="true"><use href="#${id}" /></svg>`;
+export const ARROW = '<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>';
+export const ico = (id) => `<svg class="icon" aria-hidden="true"><use href="#${id}" /></svg>`;
 const DERS = { "Türkçe": "#c2410c", "Fen Bilimleri": "#0f766e", "Matematik": "#6d28d9", "Sosyal Bilgiler": "#b45309", "İngilizce": "#1d4ed8" };
-const ders = (d) => `<span class="ders" style="--d:${DERS[d] || "var(--s)"}">${d}</span>`;
+export const ders = (d) => `<span class="ders" style="--d:${DERS[d] || "var(--s)"}">${d}</span>`;
 const DUR = 7000; // her slaytın ekranda kalma süresi (ms)
 
 const G = HAFTA.gorev;
 
 // slaytlar: yarışma yoksa o slayt hiç kurulmaz
-const SLIDES = [
+const STUDENT_SLIDES = [
   {
     label: "Haftanın görevi", tone: "light", img: G.img, pos: "62% 50%",
     copy: `<span class="kicker">${ico("i-book")}Haftanın AI görevi · ${HAFTA.aralik}</span>
@@ -54,7 +54,8 @@ const SLIDES = [
   },
 ].filter(Boolean);
 
-export function mountWeek(root) {
+// slides verilmezse öğrencinin haftalık içeriği; öğretmen paneli kendi slaytlarını verir (aynı yapı)
+export function mountWeek(root, SLIDES = STUDENT_SLIDES) {
   const host = root.querySelector("[data-slides]"), dotsEl = root.querySelector("[data-dots]");
   const n = SLIDES.length;
   host.innerHTML = SLIDES.map((s, i) => `<article class="slide" id="wk-${i}" role="tabpanel" aria-roledescription="slayt" aria-label="${i + 1} / ${n}: ${s.label}" data-tone="${s.tone}"${s.narrow ? " data-narrow" : ""}>

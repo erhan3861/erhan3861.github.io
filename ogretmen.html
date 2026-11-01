@@ -110,22 +110,14 @@
     <!-- ana sayfa: öğrencideki "görevlerim" karuselinin yerinde whiteboard; sağda beceri haritası ve sınıflar -->
     <div class="view home" data-view="ana">
       <main class="main">
-        <section class="hero wb-hero" aria-labelledby="wbh-h">
+        <!-- bu hafta: duyurular, öğrencilere verilen haftanın görevi, yönlendirme, haftanın sözü (js/ogretmen.js T_SLIDES) -->
+        <section class="hero week" aria-roledescription="karusel" aria-label="Bu hafta" data-week>
           <h1 class="sr-only">Ana sayfa</h1>
-          <div class="wbh-copy">
-            <span class="wbh-tag"><svg class="icon" aria-hidden="true"><use href="#i-board" /></svg>Ders tahtası</span>
-            <h2 id="wbh-h">Dersini <em>whiteboard</em> ile anlat.</h2>
-            <p>Kalem, fosforlu kalem ve yapışkan notlarla anlat; tahtayı görsel olarak kaydet, sınıfınla paylaş.</p>
-            <div class="wbh-cta">
-              <a class="btn-primary wbh-btn" href="#whiteboard"><svg class="icon" aria-hidden="true"><use href="#i-pen" /></svg>Whiteboard'u aç</a>
-              <span class="wbh-last" data-wb-last>Son tahta: Kesirler · dün</span>
-            </div>
-          </div>
-          <div class="wbh-art" aria-hidden="true">
-            <div class="wbh-board">
-              <svg viewBox="0 0 320 200" class="wbh-sketch"><path d="M30 150c30-60 70-90 110-60s70 10 100-40" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="62" cy="58" r="24" fill="none" stroke="#f5b544" stroke-width="5"/><path d="M200 140h80M200 160h56" stroke="#7b5cf0" stroke-width="6" stroke-linecap="round" opacity=".55"/></svg>
-              <span class="wbh-note n1">½ + ¼ = ?</span><span class="wbh-note n2">Örnek: pizza</span>
-            </div>
+          <div class="slides" data-slides aria-live="off"></div>
+          <div class="week-nav">
+            <div class="dots" role="tablist" aria-label="Slaytlar" data-dots></div>
+            <button type="button" class="wk-btn" aria-label="Önceki" data-prev><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+            <button type="button" class="wk-btn" aria-label="Sonraki" data-next><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></button>
           </div>
         </section>
         <section class="tools" aria-labelledby="tools-h">
@@ -139,6 +131,12 @@
           <span class="kt-score"><strong data-all-avg>78</strong><span>sınıflarının ortalaması</span></span>
           <span class="kt-bars" data-kt-bars aria-hidden="true"></span>
           <span class="kt-btn">Haritaları aç<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span>
+        </a>
+        <!-- whiteboard: öğrenci panelinde haftanın görevinin durduğu yer -->
+        <a class="wb-card" href="#whiteboard" aria-labelledby="wbc-h">
+          <span class="wbc-board" aria-hidden="true"><svg viewBox="0 0 120 70"><path d="M10 54c12-24 26-34 40-22s26 4 38-16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><circle cx="24" cy="20" r="9" fill="none" stroke="#f5b544" stroke-width="3"/></svg><i class="wbc-note">½ + ¼</i></span>
+          <span class="wbc-t"><strong id="wbc-h">Whiteboard</strong><span data-wb-last>Son tahta: Kesirler · dün</span></span>
+          <span class="wbc-go"><svg class="icon" aria-hidden="true"><use href="#i-pen" /></svg>Tahtayı aç</span>
         </a>
         <section class="acts cls-mini" aria-labelledby="clsm-h">
           <div class="head"><h2 id="clsm-h">Sınıfların durumu</h2><a href="#ogrencilerim">Öğrencilerim<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></div>

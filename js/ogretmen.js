@@ -3,6 +3,8 @@
 // Tüm öğrenci, sınıf ve rapor verisi simülasyondur.
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountCat } from "./kedi.js";
+import { mountWeek, ARROW as WK_ARROW, ico, ders } from "./week.js";
+import { HAFTA } from "./hafta.js";
 import { PRODUCTS, AREAS, STUDENTS as SAMPLE } from "./data.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -335,6 +337,36 @@ const renderBeceri = (arg, arg2) => {
 const setKmTab = (t) => { $$("[data-kmtab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.kmtab === t))); $$("[data-kmpane]").forEach((p) => { p.hidden = p.dataset.kmpane !== t; }); };
 $$("[data-kmtab]").forEach((b) => b.addEventListener("click", () => setKmTab(b.dataset.kmtab)));
 
+/* ---------- ana sayfa karuseli: öğretmen için duyuru, haftanın görevi, yönlendirme, haftanın sözü ---------- */
+const G = HAFTA.gorev;
+const T_SLIDES = [
+  { label: "Duyuru", tone: "dark", img: "assets/carousel/talent14.jpg", pos: "50% 45%",
+    copy: `<span class="kicker">${ico("i-bell")}Okul duyurusu · 6 Kasım Perşembe</span>
+      <h2>Öğretmenler kurulu<span>15.30 · Toplantı salonu</span></h2>
+      <p>Gündem: birinci dönem ara değerlendirmesi ve AI araçlarının sınıf içi kullanımı. Öncesinde kısa anketi doldurmanız rica olunur.</p>
+      <a class="cta" href="#formlar/gelisim">Anketi doldur${WK_ARROW}</a>` },
+  { label: "Haftanın görevi", tone: "light", img: G.img, pos: "62% 50%",
+    copy: `<span class="kicker">${ico("i-book")}Öğrencilerinizin bu haftaki AI görevi · ${HAFTA.aralik}</span>
+      <h2>${G.t}</h2>
+      <p>${G.ozet} Teslimleri sınıf sınıf izleyebilir, görevi kendi sınıfınıza uyarlayabilirsiniz.</p>
+      <span class="wk-meta">${ders(G.ders)}<span>Son gün ${G.teslim}</span><span>7-A: 9/12 teslim</span></span>
+      <a class="cta" href="#ogrencilerim">Teslimleri gör${WK_ARROW}</a>` },
+  HAFTA.yarisma && { label: "Yarışma", tone: "dark", img: HAFTA.yarisma.img, pos: "50% 40%", narrow: true,
+    copy: `<span class="kicker">${ico("i-spark")}Duyuru · öğrencileriniz için</span>
+      <h2>${HAFTA.yarisma.ad}<span>${HAFTA.yarisma.slogan}</span></h2>
+      <p>Öğrencilerinizi takım projeleriyle yarışmaya yönlendirin. Takvim ve kategoriler talentcup.org’da.</p>
+      <a class="cta" href="${HAFTA.yarisma.href}" target="_blank" rel="noopener">Yarışmayı incele${WK_ARROW}</a>` },
+  { label: "Bu hafta deneyin", tone: "dark", img: HAFTA.uretimGorsel.img, pos: "50% 45%",
+    copy: `<span class="kicker">${ico("i-wand")}Bu hafta deneyin</span>
+      <h2>Bir etkinliği üç seviyeye uyarlayın</h2>
+      <p>Farklılaştırma Ajanı aynı konuyu kolay, orta ve ileri düzeyde hazırlar. Tek etkinlikle tüm sınıfa ulaşın.</p>
+      <a class="cta" href="#ajanlar">Ajanı aç${WK_ARROW}</a>` },
+  { label: "Haftanın sözü", tone: "dark", img: HAFTA.ilham.img, pos: "50% 60%",
+    copy: `<span class="kicker">${ico("i-heart")}Haftanın sözü</span>
+      <blockquote><p>“Bir çocuk, bir öğretmen, bir kalem ve bir kitap dünyayı değiştirebilir.”</p><footer>Malala Yousafzai</footer></blockquote>` },
+].filter(Boolean);
+const week = mountWeek($("[data-week]"), T_SLIDES);
+
 /* ---------- whiteboard ---------- */
 const wbStage = $("[data-wb-stage]"), wbCanvas = $("[data-wb-canvas]"), wctx = wbCanvas.getContext("2d"), wbNotes = $("[data-wb-notes]");
 const WB_COLORS = ["#11142c", "#345de0", "#7b5cf0", "#e0453a", "#1f8a5b", "#f5b544"], WB_SIZES = [3, 6, 12];
@@ -424,6 +456,7 @@ const go = () => {
   if (view === "beceri") label = renderBeceri(a1, a2); else skill?.stop();
   if (view === "formlar") label = openForm(a1);
   if (view === "whiteboard") openWb();
+  week.active(view === "ana");
   document.title = `${label} · AI-LA`;
 };
 

@@ -4,6 +4,7 @@
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountCat } from "./kedi.js";
 import { PRODUCTS, AREAS } from "./data.js";
+import { openRowMenu, MORE } from "./rowmenu.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -368,7 +369,7 @@ const renderOgr = () => {
     <span role="cell"><label class="assign"><select aria-label="${esc(s.name)} sınıfı" data-move="${s.id}"><option value=""${s.cls ? "" : " selected"}>Sınıfsız</option>${CLASSES.map((c) => `<option${c.name === s.cls ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label></span>
     <span role="cell"><span class="sc"><i style="--p:${s.score}%"></i><b>${s.score}</b></span></span>
     <span role="cell" class="stu-login${s.days >= 7 ? " warn" : ""}">${s.login}</span>
-    <span role="cell" class="r stu-act"><button type="button" class="btn-ghost sm" data-reset="${s.id}">${icon("i-key")}Parola sıfırla</button></span></div>`).join("") || `<p class="empty">Bu filtreyle eşleşen öğrenci yok.</p>`;
+    <span role="cell" class="r stu-act" data-sid="${s.id}"><button type="button" class="btn-ghost sm" data-map>${icon("i-compass")}Beceri Haritası</button>${MORE(`${esc(s.name)} için diğer işlemler`)}</span></div>`).join("") || `<p class="empty">Bu filtreyle eşleşen öğrenci yok.</p>`;
 };
 chips($("[data-lvl-chips]"), [["tum", "Tümü"], ...LEVELS], (id) => { lvl = id; renderCls(); });
 const OGR_F = [["tum", "Tümü"], ["aktif", "Aktif"], ["pasif", "7+ gün girişsiz"], ["sinifsiz", "Sınıfsız"]];
@@ -386,7 +387,7 @@ $("[data-ogr-body]").addEventListener("change", (e) => { const s = e.target.clos
 const kDlg = $("[data-k-dlg]"); let kMode = null, kItem = null;
 const lvlOpts = (sel) => LEVELS.map(([id, l]) => `<option value="${id}"${id === sel ? " selected" : ""}>${l}</option>`).join("");
 const openK = (mode, item = null) => {
-  kMode = mode; kItem = item; $("[data-k-msg]").textContent = ""; $("[data-k-ok]").hidden = false; $("[data-k-ok]").textContent = "Kaydet";
+  kMode = mode; kItem = item; $("[data-k-msg]").textContent = ""; $("[data-k-close]").textContent = mode === "harita" ? "Kapat" : "Vazgeç"; $("[data-k-ok]").hidden = false; $("[data-k-ok]").textContent = "Kaydet";
   const f = $("[data-k-fields]");
   if (mode === "sinif") {
     $("[data-k-title]").textContent = item ? `${item.name} sınıfını düzenle` : "Yeni sınıf";
@@ -397,6 +398,12 @@ const openK = (mode, item = null) => {
     $("[data-k-title]").textContent = "Öğrenci ekle";
     f.innerHTML = `<label class="fld"><span>Ad soyad</span><input required placeholder="Örn. Deniz Yılmaz" data-kf-name></label>
       <label class="fld"><span>Sınıf</span><select data-kf-cls><option value="">Sınıfsız (havuz)</option>${CLASSES.map((c) => `<option>${esc(c.name)}</option>`).join("")}</select></label>`;
+  } else if (mode === "harita") {
+    $("[data-k-title]").textContent = `${item.name} · Beceri Haritası`; $("[data-k-ok]").hidden = true;
+    $("[data-k-msg]").textContent = `${item.cls || "Sınıfsız"} · son giriş ${item.login.toLocaleLowerCase("tr")}`;
+    const low = AREAS.reduce((m, a) => (item.area[a.id] < item.area[m.id] ? a : m), AREAS[0]);
+    f.innerHTML = `<div class="km-mini"><span class="lv-ring big" style="--p:${item.score}"><b>${item.score}</b></span><span><strong>Genel beceri puanı</strong><small>Gelişim alanı: ${low.name}</small></span></div>
+      <ul class="hbars">${AREAS.map((a, i) => `<li><span class="hb-n">${a.short}</span><span class="hb-bar"><i style="--p:${item.area[a.id]}%;background:${AREA_INK[i]}"></i></span><b>${item.area[a.id]}</b></li>`).join("")}</ul>`;
   } else {
     $("[data-k-title]").textContent = "Parolayı sıfırla"; f.innerHTML = "";
     $("[data-k-msg]").textContent = `${item.name} için geçici bir parola oluşturulacak. Mevcut parolası geçersiz olur.`; $("[data-k-ok]").textContent = "Sıfırla";
@@ -421,7 +428,11 @@ $("[data-k-close]").addEventListener("click", () => kDlg.close());
 kDlg.addEventListener("click", (e) => { if (e.target === kDlg) kDlg.close(); });
 $("[data-cls-add]").addEventListener("click", () => openK("sinif"));
 $("[data-ogr-add]").addEventListener("click", () => openK("ogrenci"));
-$("[data-ogr-body]").addEventListener("click", (e) => { const b = e.target.closest("[data-reset]"); if (b) openK("reset", STU.find((x) => x.id === b.dataset.reset)); });
+$("[data-ogr-body]").addEventListener("click", (e) => {
+  const cell = e.target.closest("[data-sid]"); if (!cell) return; const s = STU.find((x) => x.id === cell.dataset.sid);
+  if (e.target.closest("[data-map]")) openK("harita", s);
+  const m = e.target.closest("[data-more]"); if (m) openRowMenu(m, [["Parola sıfırla", "i-key", () => openK("reset", s)]]);
+});
 counts(); fillClsSelect(); renderCls(); renderOgr();
 
 /* ---------- sayfalar ---------- */

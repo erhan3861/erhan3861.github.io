@@ -306,3 +306,16 @@ a.bm-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(17, 20
   .stu-row .r { justify-self: start; }
   .stu-row.th { display: none; }
 }
+
+/* satır sonu ⋯ menüsü (js/rowmenu.js): ana eylem satırda, diğerleri menüde */
+.more-btn { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border: 0; border-radius: 10px; background: none; color: var(--ink-3); cursor: pointer; transition: background .2s, color .2s; }
+.more-btn:hover, .more-btn[aria-expanded="true"] { background: #eef0f7; color: var(--ink); }
+.more-btn .icon { width: 18px; height: 18px; }
+.row-menu { position: fixed; z-index: 400; min-width: 190px; padding: 6px; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px var(--line), 0 18px 36px -16px rgba(20, 30, 90, .4); animation: chat-in .16s var(--ease); }
+.row-menu[hidden] { display: none; }
+.row-menu button { display: flex; align-items: center; gap: 10px; width: 100%; height: 38px; padding: 0 12px; border: 0; border-radius: 9px; background: none; font: inherit; font-size: 13.5px; font-weight: 500; color: var(--ink); text-align: left; cursor: pointer; }
+.row-menu button:hover, .row-menu button:focus-visible { background: #f2f3fa; outline: 0; }
+.row-menu .icon { width: 16px; height: 16px; color: var(--ink-3); }
+.row-menu .danger { color: #c2392f; }
+.stu-act { align-items: center; gap: 4px; }
+.stu-row { grid-template-columns: minmax(200px, 1.4fr) minmax(130px, .8fr) minmax(110px, .7fr) auto; }

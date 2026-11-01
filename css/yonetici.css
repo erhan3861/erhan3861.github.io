@@ -261,3 +261,9 @@
 @media (max-width: 1180px) { .ag-wrap { grid-template-columns: 1fr; } .ag-feed { max-height: 320px; } }
 
 .agd-sec .pf-fields { flex: none; grid-template-rows: none; }   /* profil formunun satır kuralı burada boşluk açıyordu */
+.km-mini { display: flex; align-items: center; gap: 14px; padding: 4px 0 8px; }
+.km-mini strong { display: block; font-size: 14.5px; }
+.km-mini small { font-size: 12.5px; color: var(--ink-3); }
+.lv-ring.big { width: 64px; }
+.lv-ring.big b { font-size: 18px; }
+.k-fields .hbars { gap: 10px; }

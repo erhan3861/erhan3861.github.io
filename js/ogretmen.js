@@ -4,6 +4,7 @@
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountCat } from "./kedi.js";
 import { mountWhiteboard } from "./whiteboard.js";
+import { openRowMenu, MORE } from "./rowmenu.js";
 import { mountWeek, ARROW as WK_ARROW, ico, ders } from "./week.js";
 import { HAFTA } from "./hafta.js";
 import { PRODUCTS, AREAS, STUDENTS as SAMPLE } from "./data.js";
@@ -334,9 +335,9 @@ const renderStu = () => {
     <span role="cell" class="stu-who"><span class="avatar sm" style="background:${avColor(s)}">${initials(s.name)}</span><span><strong>${esc(s.name)}</strong><small>No ${s.no}</small></span></span>
     <span role="cell">${scoreBar(s.score)}</span>
     <span role="cell" class="stu-login">${s.login}</span>
-    <span role="cell" class="r stu-act">${pool
+    <span role="cell" class="r stu-act" data-sid="${s.id}">${pool
       ? `<label class="assign"><select aria-label="${esc(s.name)} için sınıf" data-assign="${s.id}"><option value="">Sınıfa ata…</option>${CLASSES.map((c) => `<option>${c}</option>`).join("")}</select></label>`
-      : ""}<a class="btn-ghost sm" href="#beceri/ogr/${s.id}"><svg class="icon" aria-hidden="true"><use href="#i-compass" /></svg>Beceri Haritası</a><button type="button" class="btn-ghost sm" data-reset="${s.id}"><svg class="icon" aria-hidden="true"><use href="#i-key" /></svg>Parola sıfırla</button></span>
+      : ""}<a class="btn-ghost sm" href="#beceri/ogr/${s.id}"><svg class="icon" aria-hidden="true"><use href="#i-compass" /></svg>Beceri Haritası</a>${MORE(`${esc(s.name)} için diğer işlemler`)}</span>
   </div>`).join("") || `<p class="empty">Bu aramayla eşleşen öğrenci yok.</p>`;
 };
 $("[data-stu-cls]").addEventListener("click", (e) => { const b = e.target.closest("[data-cls]"); if (!b) return; stuCls = b.dataset.cls; renderStuSide(); renderStu(); });
@@ -349,11 +350,15 @@ const renderMini = () => { $$("[data-cls-mini] .clsm").forEach((a, i) => { const
 // parola sıfırla
 const rsDlg = $("[data-rs-dlg]"); let rsWho = null;
 $("[data-stu-body]").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-reset]"); if (!b) return;
-  rsWho = STU.find((x) => x.id === b.dataset.reset);
+  const b = e.target.closest("[data-more]"); if (!b) return;
+  const who = STU.find((x) => x.id === b.closest("[data-sid]").dataset.sid);
+  openRowMenu(b, [["Parola sıfırla", "i-key", () => openReset(who)]]);
+});
+const openReset = (who) => {
+  rsWho = who;
   $("[data-rs-text]").textContent = `${rsWho.name} için geçici bir parola oluşturulacak. Mevcut parolası geçersiz olur.`;
   $("[data-rs-pass]").hidden = true; $("[data-rs-ok]").hidden = false; rsDlg.showModal();
-});
+};
 $("[data-rs-ok]").addEventListener("click", () => {
   const code = `${initials(rsWho.name)}-${Math.floor(1000 + rsWho.r() * 9000)}`;
   $("[data-rs-code]").textContent = code; $("[data-rs-pass]").hidden = false; $("[data-rs-ok]").hidden = true;

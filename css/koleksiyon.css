@@ -99,3 +99,11 @@
 .as-cls input:focus-visible + span { outline: 2px solid var(--s); outline-offset: 2px; }
 .rs-text { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 .col-tags i.sent { background: #e6f6ee; color: #16794f; }
+/* Araçlar sekmesi: tüm araçlar kaydırmadan sığsın diye yatay, kompakt kartlar (görsel solda, ad + tek satır açıklama sağda) */
+.tools-page .tool-grid.all { grid-template-columns: repeat(auto-fill, minmax(236px, 1fr)); grid-template-rows: none; grid-auto-rows: 80px; gap: 12px; align-content: start; min-height: 0; overflow-y: auto; padding: 2px; }
+.tools-page .tool-grid.all > li { container-type: normal; }
+.tools-page .tool-grid.all .tool { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 14px; row-gap: 3px; padding: 12px 40px 12px 12px; border-radius: 18px; }
+.tools-page .tool-grid.all .tool-art { grid-row: 1 / 3; width: 52px; margin: 0; border-radius: 15px; }
+.tools-page .tool-grid.all .tool strong { align-self: end; margin: 0; font-size: 14.5px; }
+.tools-page .tool-grid.all .tool > span:not(.tool-icon):not(.tool-art) { display: -webkit-box !important; align-self: start; -webkit-line-clamp: 1; line-clamp: 1; font-size: 12.5px; }
+.tools-page .tool-grid.all .tool .go { top: 50%; right: 12px; margin-top: -14px; }

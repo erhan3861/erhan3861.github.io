@@ -4,6 +4,7 @@
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountCat } from "./kedi.js";
 import { mountWhiteboard } from "./whiteboard.js";
+import { mountToolForm } from "./toolform.js";
 import { openRowMenu, MORE } from "./rowmenu.js";
 import { mountWeek, ARROW as WK_ARROW, ico, ders } from "./week.js";
 import { HAFTA } from "./hafta.js";
@@ -65,30 +66,32 @@ const classAvg = (c) => avg(inClass(c).map((s) => s.score));
 const initials = (full) => full.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toLocaleUpperCase("tr")).join("") || "?";
 const avColor = (s) => hues[s.no % 4][0];
 
-/* ---------- araçlar (öğretmene göre) ---------- */
+/* ---------- araçlar: whitelabel uygulamasındaki öğretmen araçları + üretim araçları; kart #arac/<id> formunu açar (js/toolform.js) ---------- */
 const TOOLS = [
-  [11, "Ders Planı", "Kazanıma uygun ders planı ve akış hazırla.", "yazi"],
-  [15, "Sınav Hazırla", "Seviyeye göre karışık sorular ve cevap anahtarı.", "olcme"],
-  [1, "Görsel Oluştur", "Ders için anlatımı güçlendiren görseller üret.", "gorsel"],
-  [2, "Video Oluştur", "Konuyu kısa bir videoyla anlat.", "video"],
-  [11, "Sunum Hazırla", "Konunu anlat, slaytları birlikte kurun.", "yazi"],
-  [8, "Rubrik Oluştur", "Ödev ve projeler için puanlama ölçütü.", "olcme"],
-  [3, "Veli Mesajı", "Velilere açık ve sıcak bilgilendirme metni.", "yazi"],
-  [16, "Etkinlik Fikri", "Aynı konuyu üç seviyede çalışan etkinlikler.", "yazi"],
-  [12, "Özet Çıkar", "Uzun bir metni ders notuna dönüştür.", "yazi"],
-  [13, "Seslendirme", "Metni doğal bir sesle okut.", "ses"],
-  [9, "Görsel Düzenle", "Arka planı değiştir, ayrıntı ekle.", "gorsel"],
-  [10, "Görselden Video", "Bir görseli kısa bir sahneye çevir.", "video"],
-  [5, "Kod Yaz", "Bilişim dersleri için örnek kod ve alıştırma.", "kod"],
-  [14, "Kod Açıkla", "Öğrenci kodunu adım adım açıkla.", "kod"],
-  [6, "3D Oluştur", "Konuyu üç boyutlu modelle göster.", "gorsel"],
-  [4, "Müzik Oluştur", "Etkinlikler için kısa müzik.", "ses"],
+  [11, "Ders Planı Oluştur", "Yöntemleri seçerek kazanıma uygun ders planı.", "plan", "lesson-plan"],
+  [15, "Karışık Sınav Oluştur", "Süre, zorluk, Bloom ve soru türü dağılımıyla sınav.", "olcme", "mix_exam_generator"],
+  [16, "Temel Kabuller Soru Seti", "Hazırbulunuşluğu ölçen başlangıç soruları.", "olcme", "basic-assumptions-guide"],
+  [3, "Hikâye-Drama Oluştur", "Değer eğitimi için hikâye, drama ya da masal.", "plan", "story-drama"],
+  [12, "Veli Toplantısı Raporu", "Analiz dosyasından veliye anlaşılır rapor.", "rapor", "parent-meeting-report"],
+  [8, "Performans Gelişim Özeti", "Gelişim raporunu kısa bir özete çevir.", "rapor", "rapor-ozetleme-asistani"],
+  [7, "Yaşantı Temelli Öğrenme", "Konuyu gerçek hayattan bir yaşantıyla kur.", "plan", "yasanti_temelli_ogrenme_ogretmen"],
+  [9, "Etkinlik Oluştur", "Kazanıma uygun, süresi ayarlı sınıf etkinliği.", "plan", "deneyle_anlat"],
+  [10, "Proje Ödevi Oluştur", "Ürün türü ve teslim süresiyle proje ödevi.", "plan", "performans_odevi_olustur"],
+  [14, "Öğrenme Kanıtları Üret", "Kazanımın gerçekleştiğini gösteren kanıtlar.", "olcme", "ogrenme_kanitlari_uret"],
+  [6, "Simülasyon Aracı", "Konuyu etkileşimli bir simülasyonla göster.", "plan", "simulation-test"],
+  [14, "Sınav Okuyucu", "Cevap kâğıtlarını anahtara göre oku ve puanla.", "olcme", "exam_reader"],
+  [5, "Bilişim Ders Planı Oluştur", "Scratch'ten Python'a bilişim dersi planı.", "plan", "bilisim_ders_plani"],
+  [1, "Görsel Oluştur", "Anlatımı güçlendiren ders görselleri.", "uretim", "gorsel"],
+  [2, "Video Oluştur", "Konuyu kısa bir videoyla anlat.", "uretim", "video"],
+  [11, "Sunum Hazırla", "Konuyu ver, slaytlar birlikte kurulsun.", "uretim", "sunum"],
+  [4, "Müzik Oluştur", "Etkinlikler için kısa müzik.", "uretim", "muzik"],
+  [13, "Seslendirme", "Metni doğal bir sesle okut.", "uretim", "ses"],
 ];
 TOOLS.forEach((t, i) => { t.n = i; });
-const CATS = [["tum", "Tümü"], ["yazi", "Yazı"], ["olcme", "Ölçme"], ["gorsel", "Görsel"], ["video", "Video"], ["ses", "Ses"], ["kod", "Kod"]];
+const CATS = [["tum", "Tümü"], ["plan", "Planlama"], ["olcme", "Ölçme"], ["rapor", "Raporlama"], ["uretim", "Üretim"]];
 const toolCard = (tool) => {
   const [art, t, d] = tool, [hue, tint] = hues[tool.n % 4];
-  return `<li><a class="tool" href="#" style="--hue:${hue};--tint:${tint}">
+  return `<li><a class="tool" href="#arac/${tool[4]}" style="--hue:${hue};--tint:${tint}">
     <span class="tool-art"><img src="assets/araclar/t${String(art).padStart(2, "0")}.png" alt="" loading="lazy"></span>
     <strong>${t}</strong><span>${d}</span>${ARROW}</a></li>`;
 };
@@ -255,6 +258,19 @@ $("[data-col-new]").addEventListener("click", () => {
 });
 
 colAll();
+
+/* ---------- araç formu: üretilen koleksiyonun başına eklenir ---------- */
+const COLK = { "lesson-plan": "plan", mix_exam_generator: "sinav", "basic-assumptions-guide": "kabul", "story-drama": "drama", "parent-meeting-report": "veli",
+  "rapor-ozetleme-asistani": "perf", "simulation-test": "sim", exam_reader: "okuyucu", gorsel: "gorsel", video: "video" };
+const toolForm = mountToolForm($('[data-view="arac"]'), {
+  find: (id) => { const t = TOOLS.find((x) => x[4] === id); if (!t) return null; const [hue, tint] = hues[t.n % 4]; return { id, art: t[0], name: t[1], desc: t[2], hue, tint }; },
+  onSave: (tool, v, out) => {
+    const k = COLK[tool.id] || tool.id; KTOOLS[k] ||= [tool.name, tool.art];
+    COL.unshift({ id: `n${Date.now()}`, t: out.title, k, ders: v.ders || null, grade: v.sinif ? +v.sinif : null, folder: null, d: 0,
+      atanabilir: ["sinav", "okuyucu", "kabul", "sim"].includes(k), assigned: [], shared: false, fromOther: null, img: k === "gorsel" ? "uzay" : null });
+    colAll();
+  },
+});
 
 /* ---------- ajanlar ---------- */
 const AGENTS = [
@@ -473,11 +489,13 @@ const go = () => {
   view = VIEWS.includes(h) ? h : "ana";
   $$("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== view; });
   document.body.dataset.page = view;
-  const navKey = view === "beceri" ? "ogrencilerim" : view;
+  const navKey = view === "beceri" ? "ogrencilerim" : view === "arac" ? "araclar" : view;
   $$("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   let label = LABELS[view];
   if (view === "beceri") label = renderBeceri(a1, a2); else skill?.stop();
   if (view === "formlar") label = openForm(a1);
+  if (view === "arac") label = toolForm.open(a1) || "Araçlar";
+  if (view === "araclar") setTab(a1 === "koleksiyon" ? "koleksiyon" : "arac");
   if (view === "whiteboard") openWb(); else wb.close();
   week.active(view === "ana");
   document.title = `${label} · AI-LA`;

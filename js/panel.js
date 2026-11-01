@@ -2,6 +2,7 @@
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountWeek, renderTask } from "./week.js";
 import { mountCat } from "./kedi.js";
+import { mountToolForm } from "./toolform.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -34,30 +35,29 @@ setText("[data-avatar]", R.avatar);
 const ARROW = '<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg>';
 
 /* ---------- araçlar: ana sayfada ilk sekizi, Araçlar sayfasında hepsi ---------- */
-const TOOLS = [
-  ["i-image", "Görsel Oluştur", "Metinden ya da görselden etkileyici görseller üret.", "gorsel"],
-  ["i-video", "Video Oluştur", "Metin, görsel ya da şablonla videolar hazırla.", "video"],
-  ["i-chat", "Sohbet", "Seviyeni bilen asistanla soru sor, plan yap.", "yazi"],
-  ["i-music", "Müzik Oluştur", "Hayalindeki müziği birlikte üret.", "ses"],
-  ["i-code", "Kod Yaz", "Python ve daha fazlasıyla projeler geliştir.", "kod"],
-  ["i-cube", "3D Oluştur", "Fikirlerini üç boyutlu modellere dönüştür.", "gorsel"],
-  ["i-agent", "Ajan", "Kendi yapay zekâ ajanını kur, görev ver.", "ogrenme"],
-  ["i-template", "Şablonlar", "Hazır şablonlarla hızlıca üretime başla.", "gorsel"],
-  ["i-wand", "Görsel Düzenle", "Arka planı değiştir, ayrıntı ekle, stil ver.", "gorsel"],
-  ["i-video", "Görselden Video", "Bir resmi kısa bir sahneye çevir.", "video"],
-  ["i-slides", "Sunum Hazırla", "Konunu anlat, slaytları birlikte kurun.", "yazi"],
-  ["i-doc", "Özet Çıkar", "Uzun bir metni anlaşılır notlara dönüştür.", "yazi"],
-  ["i-mic", "Seslendirme", "Metnini doğal bir sesle okut.", "ses"],
-  ["i-code", "Kod Açıkla", "Bir kodun ne yaptığını adım adım öğren.", "kod"],
-  ["i-book", "Soru Çöz", "Takıldığın soruyu ipucuyla birlikte çöz.", "ogrenme"],
-  ["i-layers", "Akışlar", "Adım adım ilerleyen öğrenme senaryoları.", "ogrenme"],
+const TOOLS = [   // ilk sekizi whitelabel uygulamasındaki öğrenci araçları; kart #arac/<id> formunu açar (js/toolform.js)
+  ["i-spark", "Deneyle Öğren", "Konuyu evde yapabileceğin bir deneyle keşfet.", "ogrenme", "deneyle_ogren", 14],
+  ["i-globe", "Şehirle Anlat", "Konuyu sevdiğin bir şehrin hikâyesiyle öğren.", "ogrenme", "sehirle_anlat", 8],
+  ["i-layers", "Rutinimle Eşleştir", "Konuyu günlük rutinindeki anlara bağla.", "ogrenme", "rutinimle_eslestir", 16],
+  ["i-book", "Soru Çözücü", "Takıldığın soruyu adım adım, ipucuyla çöz.", "ogrenme", "soru_cozucu", 15],
+  ["i-mail", "Gelecekten Mektup Al", "Gelecekteki senden konuyla ilgili bir mektup.", "ogrenme", "gelecekten_mektup_al", 12],
+  ["i-compass", "Bugünkü Çalışma Pusulam", "Vaktine ve enerjine göre bugünün planı.", "ogrenme", "bugunku_calisma_pusulam", 7],
+  ["i-heart", "Hobilerle Bağla", "Konuyu en sevdiğin hobilerle anlat.", "ogrenme", "hobilerle_bagla", 9],
+  ["i-chat", "Konu Anlamadım Modu", "Anlamadığın yeri sana uygun yolla yeniden anlat.", "ogrenme", "konu_anlamadim_modu", 3],
+  ["i-image", "Görsel Oluştur", "Metinden etkileyici görseller üret.", "gorsel", "gorsel", 1],
+  ["i-video", "Video Oluştur", "Hayalindeki sahneyi kısa videoya çevir.", "video", "video", 2],
+  ["i-music", "Müzik Oluştur", "Hayalindeki müziği birlikte üret.", "ses", "muzik", 4],
+  ["i-code", "Kod Yaz", "Python ve daha fazlasıyla projeler geliştir.", "kod", "kod", 5],
+  ["i-slides", "Sunum Hazırla", "Konunu anlat, slaytları birlikte kurun.", "yazi", "sunum", 11],
+  ["i-doc", "Özet Çıkar", "Uzun bir metni anlaşılır notlara dönüştür.", "yazi", "ozet", 12],
+  ["i-mic", "Seslendirme", "Metnini doğal bir sesle okut.", "ses", "ses", 13],
 ];
-const CATS = [["tum", "Tümü"], ["gorsel", "Görsel"], ["video", "Video"], ["yazi", "Yazı"], ["ses", "Ses"], ["kod", "Kod"], ["ogrenme", "Öğrenme"]];
+const CATS = [["tum", "Tümü"], ["ogrenme", "Öğrenme"], ["gorsel", "Görsel"], ["video", "Video"], ["yazi", "Yazı"], ["ses", "Ses"], ["kod", "Kod"]];
 TOOLS.forEach((t, i) => { t.n = i; });   // görsel ve renk aracın kendisine bağlı; süzünce değişmez
 const toolCard = (tool) => {
   const [icon, t, d] = tool, [hue, tint] = hues[tool.n % 4];
-  const art = `assets/araclar/t${String(tool.n + 1).padStart(2, "0")}.png`;
-  return `<li><a class="tool" href="#" style="--hue:${hue};--tint:${tint}">
+  const art = `assets/araclar/t${String(tool[5]).padStart(2, "0")}.png`;
+  return `<li><a class="tool" href="#arac/${tool[4]}" style="--hue:${hue};--tint:${tint}">
     <span class="tool-art"><img src="${art}" alt="" loading="lazy" onerror="this.closest('.tool').classList.add('no-art')"></span>
     <span class="tool-icon"><svg class="icon" aria-hidden="true"><use href="#${icon}" /></svg></span>
     <strong>${t}</strong><span>${d}</span>${ARROW}</a></li>`;
@@ -165,6 +165,112 @@ $("[data-top]").innerHTML = FEED.slice(0, 4).map((f, i) => `<li><span class="ran
 /* ---------- bu hafta karuseli ---------- */
 const week = mountWeek($("[data-week]"));
 
+/* ---------- araçlar sekmeleri + koleksiyon (öğretmen panelindeki yapı: kütüphane, klasörler, tek filtre çubuğu) ----------
+   Öğrencide "Sınıfa ata" yerine "Öğretmenime gönder"; kütüphanede öğretmenden gelenler ayrı. Demo veri. */
+const setTab = (tab) => {
+  $$("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+  $$("[data-pane]").forEach((p) => { p.hidden = p.dataset.pane !== tab; });
+};
+$$("[data-tab]").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
+const ce = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const KT = Object.fromEntries(TOOLS.map((t) => [t[4], [t[1], t[5]]]));
+let folders = ["Fen ödevleri", "Matematik", "Projelerim"];
+const COL = [
+  ["Bitki ve hayvan hücresi deneyi", "deneyle_ogren", "Fen Bilimleri", 0, "Fen ödevleri"], ["Güneş sistemi posteri", "gorsel", "Fen Bilimleri", 1, "Projelerim", "uzay"],
+  ["Kesirlerde payda eşitleme", "konu_anlamadim_modu", "Matematik", 1, "Matematik"], ["İstanbul ile ondalık sayılar", "sehirle_anlat", "Matematik", 2],
+  ["Bugünkü çalışma pusulam", "bugunku_calisma_pusulam", null, 2], ["Kuvvet ve hareket sorusu", "soru_cozucu", "Fen Bilimleri", 3, "Fen ödevleri"],
+  ["Fotosentez özet videosu", "video", "Fen Bilimleri", 4, null, "foto"], ["10 yıl sonraki benden mektup", "gelecekten_mektup_al", "Türkçe", 5],
+  ["Futbol ile oran-orantı", "hobilerle_bagla", "Matematik", 6, "Matematik"], ["Yardımcı robot", "gorsel", null, 7, "Projelerim", "robot"],
+  ["Altın toplayan oyun", "kod", "Bilişim Teknolojileri", 8, "Projelerim", "oyun"], ["Sabah rutinimle maddenin halleri", "rutinimle_eslestir", "Fen Bilimleri", 9],
+  ["Sakin çalışma müziği", "muzik", null, 10, null, "muzik"], ["Okuma kültürü sunumu", "sunum", "Türkçe", 12], ["Elektrik devresi deneyi", "deneyle_ogren", "Fen Bilimleri", 14, "Fen ödevleri"],
+  ["Masal kapağı", "gorsel", "Türkçe", 16, null, "masal"],
+].map(([t, k, ders, d, folder = null, img = null], i) => ({ id: `c${i}`, t, k, ders, d, folder, img, sent: i % 5 === 1, fromTeacher: null }));
+COL.push({ id: "t1", t: "Kesirler çalışma kâğıdı", k: "sunum", ders: "Matematik", d: 2, folder: null, img: null, sent: false, fromTeacher: "Ayşe Kaya" },
+  { id: "t2", t: "Işığın yayılması deneyi", k: "deneyle_ogren", ders: "Fen Bilimleri", d: 6, folder: null, img: null, sent: false, fromTeacher: "Ayşe Kaya" });
+const CDERS = ["Fen Bilimleri", "Matematik", "Türkçe", "Bilişim Teknolojileri"], CPAGE = 18;
+const CLIB = [["tum", "Tüm üretimlerim", "i-layers"], ["gelen", "Öğretmenden gelen", "i-school"], ["gonderilen", "Gönderdiklerim", "i-send"]];
+const clib = { tum: (x) => !x.fromTeacher, gelen: (x) => !!x.fromTeacher, gonderilen: (x) => x.sent };
+let cLib = "tum", cFolder = null, cTool = "", cDers = "", cQ = "", cView = "grid", cShown = CPAGE;
+const ago = (d) => d === 0 ? "Bugün" : d === 1 ? "Dün" : d < 7 ? `${d} gün önce` : d < 30 ? `${Math.round(d / 7)} hafta önce` : `${Math.round(d / 30)} ay önce`;
+const cBase = () => COL.filter((x) => (cFolder ? x.folder === cFolder && !x.fromTeacher : clib[cLib](x)));
+const cList = () => cBase().filter((x) => (!cTool || x.k === cTool) && (!cDers || x.ders === cDers) && (!cQ || norm(x.t + " " + KT[x.k][0]).includes(cQ)))
+  .sort((a, b) => { const o = $("[data-col-sort]").value; return o === "ad" ? a.t.localeCompare(b.t, "tr") : o === "eski" ? b.d - a.d : a.d - b.d; });
+const cSelects = () => {
+  const base = cBase(), n = (k) => base.filter((x) => x.k === k).length;
+  $("[data-col-tool]").innerHTML = `<option value="">Tümü (${base.length})</option>` + Object.entries(KT).filter(([k]) => n(k)).map(([k, [nm]]) => `<option value="${k}"${k === cTool ? " selected" : ""}>${nm} (${n(k)})</option>`).join("");
+  $("[data-col-ders]").innerHTML = `<option value="">Tümü</option>` + CDERS.map((d) => `<option${d === cDers ? " selected" : ""}>${d}</option>`).join("");
+};
+const cLibRender = () => {
+  $("[data-col-lib]").innerHTML = CLIB.map(([id, l, ic]) => `<li><button type="button" class="col-f" aria-pressed="${!cFolder && id === cLib}" data-lib="${id}"><svg class="icon" aria-hidden="true"><use href="#${ic}" /></svg><span>${l}</span><b>${COL.filter(clib[id]).length}</b></button></li>`).join("");
+  $("[data-col-folders]").innerHTML = folders.map((f) => `<li><button type="button" class="col-f" aria-pressed="${f === cFolder}" data-f="${ce(f)}"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg><span>${ce(f)}</span><b>${COL.filter((x) => x.folder === f).length}</b></button></li>`).join("");
+  $("[data-col-count]").textContent = COL.filter(clib.tum).length;
+};
+const cCard = (x) => { const [tn, art] = KT[x.k];
+  return `<li class="col-item" data-id="${x.id}">
+    <span class="col-shot${x.img ? "" : " doc"}">${x.img ? `<img src="assets/thumbs/${x.img}.jpg" alt="" loading="lazy">` : `<img src="assets/araclar/t${String(art).padStart(2, "0")}.png" alt="">`}${x.k === "video" ? '<svg class="icon play" aria-hidden="true"><use href="#i-video" /></svg>' : ""}
+      <span class="col-acts"><button type="button" class="ca" data-act="ac" title="Aç" aria-label="Aç"><svg class="icon"><use href="#i-eye" /></svg></button>${x.fromTeacher ? "" : `<button type="button" class="ca" data-act="gonder" title="Öğretmenime gönder" aria-label="Öğretmenime gönder"><svg class="icon"><use href="#i-send" /></svg></button>`}<label class="ca" title="Klasöre taşı"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg><select aria-label="${ce(x.t)} klasörü" data-move="${x.id}"><option value="">Klasörsüz</option>${folders.map((f) => `<option${f === x.folder ? " selected" : ""}>${ce(f)}</option>`).join("")}</select></label></span></span>
+    <span class="col-meta"><strong title="${ce(x.t)}">${ce(x.t)}</strong><span class="col-tool">${tn}</span>
+      <span class="col-tags">${x.ders ? `<i>${x.ders}</i>` : ""}${x.sent ? `<i class="sent">Öğretmenine gönderildi</i>` : ""}</span>
+      <span class="col-foot"><span>${x.fromTeacher ? `${ce(x.fromTeacher)} paylaştı · ` : ""}${ago(x.d)}</span>${x.folder ? `<span class="col-fb"><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg>${ce(x.folder)}</span>` : ""}</span></span>
+  </li>`; };
+const cRender = (keep = false) => {
+  if (!keep) cShown = CPAGE;
+  const list = cList(), shown = list.slice(0, cShown), grid = $("[data-col-grid]");
+  grid.classList.toggle("list", cView === "list"); grid.innerHTML = shown.map(cCard).join("");
+  $("[data-col-empty]").hidden = list.length > 0;
+  $("[data-col-more]").innerHTML = list.length > cShown ? `<span>${list.length} üretimden ${shown.length} gösteriliyor</span><button type="button" class="btn-ghost" data-col-moreb>Daha fazla göster</button>` : list.length ? `<span>${list.length} üretim</span>` : "";
+  const pills = [cTool && ["tool", KT[cTool][0]], cDers && ["ders", cDers], cQ && ["q", `“${$("[data-col-q]").value.trim()}”`]].filter(Boolean);
+  $("[data-col-active]").innerHTML = pills.length ? pills.map(([k, l]) => `<button type="button" class="apill" data-rm="${k}">${ce(l)}<svg class="icon" aria-hidden="true"><use href="#i-x" /></svg></button>`).join("") + `<button type="button" class="linkish" data-col-clear>Tümünü temizle</button>` : "";
+};
+const cAll = () => { cLibRender(); cSelects(); cRender(); };
+$("[data-col-lib]").addEventListener("click", (e) => { const b = e.target.closest("[data-lib]"); if (b) { cLib = b.dataset.lib; cFolder = null; cAll(); } });
+$("[data-col-folders]").addEventListener("click", (e) => { const b = e.target.closest("[data-f]"); if (b) { cFolder = b.dataset.f; cAll(); } });
+$("[data-col-tool]").addEventListener("change", (e) => { cTool = e.target.value; cRender(); });
+$("[data-col-ders]").addEventListener("change", (e) => { cDers = e.target.value; cRender(); });
+$("[data-col-sort]").addEventListener("change", () => cRender());
+$("[data-col-q]").addEventListener("input", (e) => { cQ = norm(e.target.value.trim()); cRender(); });
+$$("[data-col-view]").forEach((b) => b.addEventListener("click", () => { cView = b.dataset.colView; $$("[data-col-view]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); cRender(true); }));
+$('[data-pane="koleksiyon"]').addEventListener("click", (e) => {
+  if (e.target.closest("[data-col-clear]")) { cTool = cDers = cQ = ""; $("[data-col-q]").value = ""; cSelects(); cRender(); }
+  const rm = e.target.closest("[data-rm]");
+  if (rm) { ({ tool: () => { cTool = ""; }, ders: () => { cDers = ""; }, q: () => { cQ = ""; $("[data-col-q]").value = ""; } })[rm.dataset.rm](); cSelects(); cRender(); }
+  if (e.target.closest("[data-col-moreb]")) { cShown += CPAGE; cRender(true); }
+});
+$("[data-col-grid]").addEventListener("change", (e) => { const s = e.target.closest("[data-move]"); if (!s) return; COL.find((x) => x.id === s.dataset.move).folder = s.value || null; cLibRender(); cRender(true); });
+// kart: Aç (demo bilgi) ve Öğretmenime gönder
+const cdDlg = $("[data-cd-dlg]"); let cdItem = null;
+$("[data-col-grid]").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  cdItem = COL.find((x) => x.id === b.closest("[data-id]").dataset.id);
+  const send = b.dataset.act === "gonder";
+  $("[data-cd-title]").textContent = send ? "Öğretmenime gönder" : cdItem.t;
+  $("[data-cd-text]").textContent = send ? (cdItem.sent ? `“${cdItem.t}” öğretmenine zaten gönderildi. İstersen yeniden gönderebilirsin.` : `“${cdItem.t}” öğretmenin Ayşe Kaya'ya gönderilecek. Öğretmenin görüp geri bildirim verebilir.`)
+    : `${KT[cdItem.k][0]} ile ${ago(cdItem.d).toLocaleLowerCase("tr")} üretildi. Demoda içerik önizlemesi yok; gerçek uygulamada burada açılır.`;
+  $("[data-cd-ok]").hidden = !send; cdDlg.showModal();
+});
+$("[data-cd-form]").addEventListener("submit", () => { if (cdItem) { cdItem.sent = true; cLibRender(); cRender(true); } });
+$("[data-cd-close]").addEventListener("click", () => cdDlg.close());
+cdDlg.addEventListener("click", (e) => { if (e.target === cdDlg) cdDlg.close(); });
+$("[data-col-new]").addEventListener("click", () => {
+  const ul = $("[data-col-folders]"); if ($(".col-f-new", ul)) return;
+  const li = document.createElement("li"); li.innerHTML = `<input class="col-f-new" placeholder="Klasör adı" maxlength="28" aria-label="Yeni klasör adı">`;
+  ul.append(li); const inp = $("input", li); inp.focus();
+  const done = () => { const v = inp.value.trim(); if (v && !folders.includes(v)) { folders.push(v); cFolder = v; } cAll(); };
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") done(); if (e.key === "Escape") cLibRender(); });
+  inp.addEventListener("blur", done);
+});
+cAll();
+
+/* ---------- araç formu: öğrencinin sınıfı baştan seçili; üretilen koleksiyonun başına eklenir ---------- */
+const toolForm = mountToolForm($('[data-view="arac"]'), {
+  preset: { sinif: "7" },
+  find: (id) => { const t = TOOLS.find((x) => x[4] === id); if (!t) return null; const [hue, tint] = hues[t.n % 4]; return { id, art: t[5], name: t[1], desc: t[2], hue, tint }; },
+  onSave: (tool, v, out) => {
+    COL.unshift({ id: `n${Date.now()}`, t: out.title, k: tool.id, ders: v.ders || null, d: 0, folder: null, img: tool.id === "gorsel" ? "uzay" : null, sent: false, fromTeacher: null });
+    cAll();
+  },
+});
+
 /* ---------- sayfalar: menü adresle (#araclar …) değişir, sayfa yeniden yüklenmez ---------- */
 let view = "ana", skillMap = null;
 const VIEWS = $$("[data-view]").map((v) => v.dataset.view);
@@ -174,8 +280,10 @@ const go = () => {
   if (view === "gorev" && !renderTask($("[data-task]"), decodeURIComponent(arg || ""))) view = "ana";
   $$("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== view; });
   document.body.dataset.page = view;   // data-view değil: [data-view] seçicisi body'yi de görünüm sanıp gizler
-  $$("[data-nav]").forEach((a) => { if (a.dataset.nav === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-  const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : ($(`[data-nav="${view}"]`)?.textContent.trim() || { ekosistem: "Ekosistem" }[view] || "AI-LA");   // index2: Ekosistem menüde yok
+  const navKey = view === "arac" ? "araclar" : view;
+  $$("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  if (view === "araclar") setTab(arg === "koleksiyon" ? "koleksiyon" : "arac");
+  const label = view === "arac" ? (toolForm.open(decodeURIComponent(arg || "")) || "Araçlar") : view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : ($(`[data-nav="${view}"]`)?.textContent.trim() || { ekosistem: "Ekosistem" }[view] || "AI-LA");   // index2: Ekosistem menüde yok
   document.title = `${label} · AI-LA`;
   week.active(view === "ana");
   if (view === "kendini-tani") {

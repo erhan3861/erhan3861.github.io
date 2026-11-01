@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Öğretmen · AI-LA</title>
+  <meta name="theme-color" content="#f6f7fd" />
+  <link rel="icon" type="image/png" href="assets/aila-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/panel.css" />
+  <link rel="stylesheet" href="css/ogretmen.css" />
+  <script type="module" src="js/ogretmen.js"></script>
+</head>
+<body>
+<!-- tek çizgi ailesi (24px, 1.75 kalınlık, yuvarlak uç) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v9.5a2 2 0 0 0 2 2h3v-6h3v6h3a2 2 0 0 0 2-2V9"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12.5 9 5 9-5M3 16.5l9 5 9-5"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2M18 14.8c1.6.7 2.7 2.2 3 4.7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c.5 4.6 2.9 7 9.5 9.5-6.6 2.5-9 4.9-9.5 9.5-.5-4.6-2.9-7-9.5-9.5 6.6-2.5 9-4.9 9.5-9.5z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="9.5" r="1.6"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4.5 3.5"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M10.5 9.5v5l4.5-2.5z" fill="currentColor"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A1.5 1.5 0 0 1 4 14.5z"/><path d="M8.5 8.5h7M8.5 11.5h4.5"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.5l10-2v12"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 7.5-5 4.5 5 4.5M15.5 7.5l5 4.5-5 4.5M13.5 5l-3 14"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></symbol>
+    <symbol id="i-agent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="3.5"/><path d="M12 7V4M9.5 4h5"/><circle cx="9" cy="13" r="1.2" fill="currentColor"/><circle cx="15" cy="13" r="1.2" fill="currentColor"/><path d="M2 12.5v2M22 12.5v2"/></symbol>
+    <symbol id="i-template" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M9.5 9v11.5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/></symbol>
+    <symbol id="i-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m4 20 11-11M14 4v3M19.5 9.5h-3M17.5 5.5l-2 2M18 14v2M19 15h-2"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h7l4 4v12.5a1.5 1.5 0 0 1-1.5 1.5h-9.5A1.5 1.5 0 0 1 5 19.5v-15A1.5 1.5 0 0 1 6.5 3z"/><path d="M13 3v4.5h4.5M8.5 12h7M8.5 15.5h5"/></symbol>
+    <symbol id="i-slides" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M12 16v4M8.5 20h7M7 8.5h6M7 11.5h4"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9h17M9.5 9v11.5"/></symbol>
+    <symbol id="i-sidebar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M9.5 4v16M15.5 10l-2 2 2 2"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7.5 8 5.5 8-5.5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.5 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-school" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 4.5-9 4.5-9-4.5z"/><path d="M6.5 9.5v5c1.5 1.6 3.4 2.5 5.5 2.5s4-.9 5.5-2.5v-5M21 7.5v6"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2 2 0 0 1 6 6.5h2l1.5-2h5L16 6.5h2a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.3"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h3.5A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M10 8l-4 4 4 4M6 12h9"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m20 11.5-8.2 8.2a5 5 0 0 1-7.1-7.1l8.6-8.6a3.4 3.4 0 0 1 4.8 4.8l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2 1 4.3 2.7l2.4 4.6c1.1 1.7 2.3 2.7 4.3 2.7H21M18 14l3 3-3 3M3 17h3.5c1.4 0 2.4-.5 3.2-1.4M14.3 8.4c.8-.9 1.8-1.4 3.2-1.4H21M18 4l3 3-3 3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.1 3.6 8.5s-1.2 6.2-3.6 8.5c-2.4-2.3-3.6-5.1-3.6-8.5S9.6 5.8 12 3.5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+    <symbol id="i-board" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20l2-4M16 20l-2-4M7 11l3-3 2 2 4-4"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14.5 5.5l3 3"/></symbol>
+    <symbol id="i-marker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 4h5l2-2M9 14l8-8a2.1 2.1 0 0 1 3 3l-8 8M9 14l3 3"/><path d="M3 21h18" opacity=".5"/></symbol>
+    <symbol id="i-eraser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h12M5.5 16.5 14 8l5 5-6.5 6.5H8.5z"/><path d="M10 12l5 5"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5V14l-6 6H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M14 20v-4.5a1.5 1.5 0 0 1 1.5-1.5H20M8 9h8M8 12.5h5"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l3 3M18.5 4.5l2 2"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5 6 5h12l2.5 8.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z"/><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="side-head">
+      <a class="brand" href="#ana"><img src="assets/aila-mark.png" alt="" width="34" height="34"><span>AI-LA</span></a>
+      <button type="button" class="side-toggle" aria-expanded="true" aria-controls="side-nav" aria-label="Menüyü daralt" data-side-toggle><svg class="icon" aria-hidden="true"><use href="#i-sidebar" /></svg></button>
+    </div>
+    <nav id="side-nav" aria-label="Ana menü">
+      <ul class="nav">
+        <li><a href="#ana" data-nav="ana" title="Ana Sayfa"><svg class="icon"><use href="#i-home" /></svg><span class="nav-label">Ana Sayfa</span></a></li>
+        <li><a href="#araclar" data-nav="araclar" title="Araçlar"><svg class="icon"><use href="#i-grid" /></svg><span class="nav-label">Araçlar</span></a></li>
+        <li><a href="#ajanlar" data-nav="ajanlar" title="Ajanlar"><svg class="icon"><use href="#i-agent" /></svg><span class="nav-label">Ajanlar</span></a></li>
+        <li><a href="#topluluk" data-nav="topluluk" title="Topluluk"><svg class="icon"><use href="#i-people" /></svg><span class="nav-label">Topluluk</span></a></li>
+        <li><a href="#ogrencilerim" data-nav="ogrencilerim" title="Öğrencilerim"><svg class="icon"><use href="#i-school" /></svg><span class="nav-label">Öğrencilerim</span></a></li>
+      </ul>
+    </nav>
+    <a class="side-more" href="#ekosistem" title="Ekosistemi keşfet">
+      <svg class="icon" aria-hidden="true"><use href="#i-spark" /></svg>
+      <span><strong>Ekosistemi keşfet</strong><span>Altı platform tek oturumda</span></span>
+      <svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg>
+    </a>
+  </aside>
+
+  <div class="content">
+    <header class="bar">
+      <label class="search"><svg class="icon" aria-hidden="true"><use href="#i-search" /></svg><input type="search" placeholder="Araç, öğrenci veya özellik ara…" aria-label="Ara" data-search></label>
+      <button type="button" class="icon-btn" aria-label="Bildirimler"><svg class="icon"><use href="#i-bell" /></svg><span class="dot"></span></button>
+      <a class="user" href="#profil" aria-label="Profil">
+        <span class="avatar" data-avatar>AK</span>
+        <span class="user-name"><span>Merhaba,</span><strong data-name>Ayşe Hoca</strong></span>
+        <svg class="icon" aria-hidden="true"><use href="#i-down" /></svg>
+      </a>
+    </header>
+
+    <!-- ana sayfa: öğrencideki "görevlerim" karuselinin yerinde whiteboard; sağda beceri haritası ve sınıflar -->
+    <div class="view home" data-view="ana">
+      <main class="main">
+        <section class="hero wb-hero" aria-labelledby="wbh-h">
+          <h1 class="sr-only">Ana sayfa</h1>
+          <div class="wbh-copy">
+            <span class="wbh-tag"><svg class="icon" aria-hidden="true"><use href="#i-board" /></svg>Ders tahtası</span>
+            <h2 id="wbh-h">Dersini <em>whiteboard</em> ile anlat.</h2>
+            <p>Kalem, fosforlu kalem ve yapışkan notlarla anlat; tahtayı görsel olarak kaydet, sınıfınla paylaş.</p>
+            <div class="wbh-cta">
+              <a class="btn-primary wbh-btn" href="#whiteboard"><svg class="icon" aria-hidden="true"><use href="#i-pen" /></svg>Whiteboard'u aç</a>
+              <span class="wbh-last" data-wb-last>Son tahta: Kesirler · dün</span>
+            </div>
+          </div>
+          <div class="wbh-art" aria-hidden="true">
+            <div class="wbh-board">
+              <svg viewBox="0 0 320 200" class="wbh-sketch"><path d="M30 150c30-60 70-90 110-60s70 10 100-40" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="62" cy="58" r="24" fill="none" stroke="#f5b544" stroke-width="5"/><path d="M200 140h80M200 160h56" stroke="#7b5cf0" stroke-width="6" stroke-linecap="round" opacity=".55"/></svg>
+              <span class="wbh-note n1">½ + ¼ = ?</span><span class="wbh-note n2">Örnek: pizza</span>
+            </div>
+          </div>
+        </section>
+        <section class="tools" aria-labelledby="tools-h">
+          <div class="head"><h2 id="tools-h">Öne Çıkan Araçlar</h2><a href="#araclar">Tümünü Gör<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></div>
+          <ul class="tool-grid" data-tools></ul>
+        </section>
+      </main>
+      <aside class="rail">
+        <a class="kt" href="#beceri" aria-labelledby="kt-h">
+          <span class="kt-top"><span id="kt-h">Beceri Haritası</span><svg class="icon" aria-hidden="true"><use href="#i-compass" /></svg></span>
+          <span class="kt-score"><strong data-all-avg>78</strong><span>sınıflarının ortalaması</span></span>
+          <span class="kt-bars" data-kt-bars aria-hidden="true"></span>
+          <span class="kt-btn">Haritaları aç<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span>
+        </a>
+        <section class="acts cls-mini" aria-labelledby="clsm-h">
+          <div class="head"><h2 id="clsm-h">Sınıfların durumu</h2><a href="#ogrencilerim">Öğrencilerim<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></a></div>
+          <ul data-cls-mini></ul>
+        </section>
+      </aside>
+    </div>
+
+    <!-- whiteboard: temaya uygun ders tahtası -->
+    <section class="view page wb" data-view="whiteboard" aria-labelledby="wb-h" hidden>
+      <div class="wb-top">
+        <a class="tani-back" href="#ana"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Ana sayfa</a>
+        <h1 id="wb-h" class="wb-title"><input value="Kesirler" aria-label="Tahta adı" data-wb-name></h1>
+        <div class="wb-actions">
+          <button type="button" class="wb-ib" aria-label="Geri al" data-wb-undo><svg class="icon"><use href="#i-undo" /></svg></button>
+          <button type="button" class="wb-ib" aria-label="Tahtayı temizle" data-wb-clear><svg class="icon"><use href="#i-trash" /></svg></button>
+          <button type="button" class="btn-ghost wb-dl" data-wb-save><svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>Görsel olarak indir</button>
+        </div>
+      </div>
+      <div class="wb-stage" data-wb-stage>
+        <canvas data-wb-canvas></canvas>
+        <div class="wb-notes" data-wb-notes></div>
+        <div class="wb-tools" role="toolbar" aria-label="Tahta araçları">
+          <button type="button" class="wb-tool" aria-pressed="true" data-tool="kalem" title="Kalem"><svg class="icon"><use href="#i-pen" /></svg></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="fosforlu" title="Fosforlu kalem"><svg class="icon"><use href="#i-marker" /></svg></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="silgi" title="Silgi"><svg class="icon"><use href="#i-eraser" /></svg></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="not" title="Yapışkan not"><svg class="icon"><use href="#i-note" /></svg></button>
+          <span class="wb-sep"></span>
+          <span class="wb-colors" data-wb-colors></span>
+          <span class="wb-sep"></span>
+          <span class="wb-sizes" data-wb-sizes></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- araçlar: Araçlar + ürettiklerinin koleksiyonu (klasör, filtre, sıralama) -->
+    <section class="view page fit tools-page" data-view="araclar" aria-labelledby="araclar-h" hidden>
+      <div class="page-head">
+        <div><h1 id="araclar-h">Araçlar</h1><p>Okulunun açtığı yapay zekâ araçları ve ürettiklerin tek yerde.</p></div>
+        <div class="seg-tabs" role="tablist" aria-label="Araçlar sekmeleri">
+          <button type="button" role="tab" aria-selected="true" data-tab="arac">Araçlar</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="koleksiyon">Koleksiyonum <b data-col-count>0</b></button>
+        </div>
+      </div>
+      <div class="tab-pane" data-pane="arac">
+        <div class="chips" role="group" aria-label="Kategori" data-tool-chips></div>
+        <ul class="tool-grid all" data-all-tools></ul>
+        <p class="empty" data-tools-empty hidden>Bu aramayla eşleşen araç yok.</p>
+      </div>
+      <div class="tab-pane col" data-pane="koleksiyon" hidden>
+        <aside class="col-side">
+          <p class="col-side-h">Klasörler</p>
+          <ul class="col-folders" data-col-folders></ul>
+          <button type="button" class="col-new" data-col-new><svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>Yeni klasör</button>
+        </aside>
+        <div class="col-main">
+          <div class="col-bar">
+            <div class="chips" role="group" aria-label="Tür" data-col-chips></div>
+            <label class="col-sort">Sırala<select data-col-sort><option value="yeni">En yeni</option><option value="eski">En eski</option><option value="ad">Ada göre</option></select></label>
+          </div>
+          <ul class="col-grid" data-col-grid></ul>
+          <p class="empty" data-col-empty hidden>Bu klasörde bu türde bir üretim yok.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ajanlar -->
+    <section class="view page" data-view="ajanlar" aria-labelledby="aj-h" hidden>
+      <div class="page-head">
+        <div><h1 id="aj-h">Ajanlar</h1><p>Tekrarlayan işleri senin yerine yapan yapay zekâ yardımcıları.</p></div>
+        <button type="button" class="btn-primary aj-new" data-aj-new><svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>Yeni ajan</button>
+      </div>
+      <ul class="aj-grid" data-aj></ul>
+    </section>
+
+    <!-- ekosistem: sol alttaki kartla açılır -->
+    <section class="view page fit" data-view="ekosistem" aria-labelledby="eko-h" hidden>
+      <div class="page-head">
+        <div><h1 id="eko-h">Ekosistem</h1><p>Tek oturumla geçtiğin platformlar. Öğrencilerinin buradaki çalışmaları beceri haritalarını besler.</p></div>
+      </div>
+      <ul class="eco-grid" data-eco></ul>
+    </section>
+
+    <!-- topluluk -->
+    <section class="view page" data-view="topluluk" aria-labelledby="com-h" hidden>
+      <div class="page-head">
+        <div><h1 id="com-h">Topluluk</h1><p>Okulundaki öğretmenlerin ve öğrencilerin paylaştığı çalışmalar.</p></div>
+      </div>
+      <div class="com">
+        <ul class="feed" data-feed></ul>
+        <aside class="com-side">
+          <a class="challenge" href="#">
+            <span class="ch-top">Haftanın öğretmen paylaşımı</span>
+            <strong>AI ile farklılaştırılmış çalışma kâğıdı</strong>
+            <span>Aynı konuyu üç seviyede hazırlayan ders planı şablonunu kendi sınıfına uyarla.</span>
+            <span class="ch-meta"><b>18</b> öğretmen kullandı</span>
+            <span class="kt-btn">İncele<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span>
+          </a>
+          <section class="top-list" aria-labelledby="top-h">
+            <h2 id="top-h">Bu hafta öne çıkanlar</h2>
+            <ol data-top></ol>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <!-- öğrencilerim: sınıflar + sınıfı olmayanlar havuzu; her öğrencide beceri haritası ve parola sıfırla -->
+    <section class="view page fit stu" data-view="ogrencilerim" aria-labelledby="stu-h" hidden>
+      <div class="page-head">
+        <div><h1 id="stu-h">Öğrencilerim</h1><p>Sınıflarındaki öğrenciler; sınıfı olmayanlar havuzda bekler.</p></div>
+        <label class="search stu-search"><svg class="icon" aria-hidden="true"><use href="#i-search" /></svg><input type="search" placeholder="Öğrenci ara…" aria-label="Öğrenci ara" data-stu-q></label>
+      </div>
+      <div class="stu-wrap">
+        <aside class="stu-side">
+          <p class="col-side-h">Sınıflar</p>
+          <ul class="stu-cls" data-stu-cls></ul>
+        </aside>
+        <div class="stu-main">
+          <div class="stu-head" data-stu-head></div>
+          <div class="stu-table" role="table" aria-label="Öğrenci listesi">
+            <div class="stu-row th" role="row"><span role="columnheader">Öğrenci</span><span role="columnheader">Beceri puanı</span><span role="columnheader">Son giriş</span><span role="columnheader" class="r">İşlemler</span></div>
+            <div class="stu-body" data-stu-body></div>
+          </div>
+        </div>
+      </div>
+      <dialog class="pf-dlg rs-dlg" aria-labelledby="rs-h" data-rs-dlg>
+        <form method="dialog">
+          <img class="pf-art" src="assets/profil/p03.png" alt="" onerror="this.remove()">
+          <div class="pf-card-head"><h2 id="rs-h">Parolayı sıfırla</h2></div>
+          <p class="rs-text" data-rs-text></p>
+          <div class="rs-pass" data-rs-pass hidden><span>Geçici parola</span><b data-rs-code></b><small>Öğrenci ilk girişte yeni parola belirleyecek.</small></div>
+          <div class="pf-actions"><button type="button" class="btn-ghost" data-rs-close>Kapat</button><button type="button" class="btn-primary" data-rs-ok>Sıfırla</button></div>
+        </form>
+      </dialog>
+    </section>
+
+    <!-- beceri haritası: #beceri (sınıflar), #beceri/<sınıf> (öğrenciler), #beceri/ogr/<id> (öğrencinin haritası + platform raporları) -->
+    <section class="view page fit bm" data-view="beceri" aria-labelledby="bm-h" hidden>
+      <div class="page-head">
+        <div><nav class="crumbs" aria-label="Konum" data-bm-crumbs></nav><h1 id="bm-h" data-bm-title>Beceri Haritası</h1><p data-bm-sub>Sınıflarının Maarif Modeli’nin altı beceri alanındaki durumu.</p></div>
+      </div>
+      <div class="bm-body" data-bm-body></div>
+      <div class="km bm-map" data-bm-map hidden>
+        <div class="km-side">
+          <div class="km-score"><strong data-km-score>0</strong><span>genel beceri puanı<br><b data-km-meta>7-A · 6 platform</b></span></div>
+          <div class="seg-tabs sm" role="tablist" aria-label="Görünüm"><button type="button" role="tab" aria-selected="true" data-kmtab="karne">Beceri karnesi</button><button type="button" role="tab" aria-selected="false" data-kmtab="rapor">Platform raporları</button></div>
+          <div data-kmpane="karne"><ul class="karne" role="listbox" aria-label="Beceri karnesi" data-karne></ul><p class="advice-line"><span>Öneri</span> <span data-advice></span></p></div>
+          <ul class="reports" data-kmpane="rapor" data-reports hidden></ul>
+        </div>
+        <div class="km-stage" data-km-stage></div>
+      </div>
+    </section>
+
+    <!-- formlar: #formlar/tani ve #formlar/gelisim; profildeki iki karttan açılır (js: FORMS) -->
+    <section class="view page tani" data-view="formlar" aria-labelledby="tani-h" hidden>
+      <header class="tani-top">
+        <a class="tani-back" href="#profil"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Profil</a>
+        <div class="tani-title"><h1 id="tani-h" data-form-title>Sizi tanıyalım</h1><span data-form-sub>Yaklaşık 3 dakika</span></div>
+        <ol class="tani-dots" aria-label="Adımlar" data-tani-dots></ol>
+      </header>
+      <div class="tani-card">
+        <div class="tani-art" aria-hidden="true">
+          <span class="tani-blob b1"></span><span class="tani-blob b2"></span>
+          <img src="assets/profil/p05a.png" alt="" data-tani-art>
+          <span class="tani-count" data-tani-count>1 / 6</span>
+        </div>
+        <form class="tani-body" data-tani-form novalidate>
+          <div class="tani-step" data-tani-step aria-live="polite"></div>
+          <div class="tani-nav">
+            <button type="button" class="round-btn" aria-label="Geri" data-tani-prev><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+            <span class="tani-hint" data-tani-hint></span>
+            <button type="button" class="tani-skip" data-tani-skip>Atla</button>
+            <button type="submit" class="tani-next" data-tani-next><span data-tani-next-label>Başlayalım</span><span class="tani-next-ic"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- profil: üst sağdaki addan açılır. Masaüstünde tek ekran, kaydırma yok. -->
+    <section class="view page profile" data-view="profil" aria-labelledby="pf-h" hidden>
+      <div class="pf-cover">
+        <div class="pf-id">
+          <div class="pf-avatar-wrap">
+            <span class="avatar xl" data-avatar>AK</span>
+            <button type="button" class="pf-cam" aria-label="Avatarı değiştir" aria-haspopup="menu" aria-expanded="false" data-av-btn><svg class="icon" aria-hidden="true"><use href="#i-camera" /></svg></button>
+            <div class="av-menu" role="menu" data-av-menu hidden>
+              <button type="button" role="menuitem" data-av="upload"><svg class="icon" aria-hidden="true"><use href="#i-camera" /></svg>Fotoğraf yükle</button>
+              <div class="av-presets" aria-label="Hazır avatarlar">
+                <button type="button" role="menuitem" aria-label="Kedi avatarı" data-av="assets/kedi-yuz.png"><img src="assets/kedi-yuz.png" alt=""></button>
+                <button type="button" role="menuitem" aria-label="AI-LA avatarı" data-av="assets/aila-maskot.png"><img src="assets/aila-maskot.png" alt=""></button>
+              </div>
+              <button type="button" role="menuitem" class="av-remove" data-av="remove"><svg class="icon" aria-hidden="true"><use href="#i-trash" /></svg>Kaldır, baş harfler kalsın</button>
+            </div>
+            <input type="file" accept="image/*" hidden data-av-file>
+          </div>
+          <div class="pf-name">
+            <h1 id="pf-h" data-fullname>Ayşe Kaya</h1>
+            <p><span class="pf-badge">Öğretmen</span><span>Fen Bilimleri</span><span>Demo Okulları</span></p>
+          </div>
+        </div>
+        <div class="pf-stats">
+          <div><strong>3</strong><span>sınıf</span></div>
+          <div><strong data-stu-total>84</strong><span>öğrenci</span></div>
+          <div><strong>42</strong><span>üretim</span></div>
+          <img class="pf-trophy" src="assets/profil/p08.png" alt="" onerror="this.remove()">
+        </div>
+      </div>
+
+      <div class="pf-grid">
+        <form class="pf-card pf-form" data-pf-form novalidate>
+          <img class="pf-art" src="assets/profil/p01.png" alt="" onerror="this.remove()">
+          <div class="pf-card-head"><h2>Kişisel bilgiler</h2><span class="pf-hint">Okul yönetimi ve öğrencilerin görür</span></div>
+          <div class="pf-fields">
+            <label class="fld wide"><span>Ad soyad</span><input name="ad" value="Ayşe Kaya" autocomplete="name" required data-pf-ad></label>
+            <div class="fld ro"><span>E-posta</span><span class="ro-box"><svg class="icon" aria-hidden="true"><use href="#i-mail" /></svg><span>ayse.kaya@demo.ai-la.ai</span><svg class="icon lock" aria-label="Okul tarafından yönetilir"><use href="#i-lock" /></svg></span></div>
+            <div class="fld ro"><span>Branş</span><span class="ro-box"><svg class="icon" aria-hidden="true"><use href="#i-school" /></svg><span>Fen Bilimleri · 7-A, 7-B, 8-A</span><svg class="icon lock" aria-label="Okul tarafından yönetilir"><use href="#i-lock" /></svg></span></div>
+            <label class="fld wide about"><span>Hakkımda <em data-pf-count>0/120</em></span><textarea name="hakkimda" rows="2" maxlength="120" data-pf-about placeholder="Kendinizden kısaca bahsedin">Deneylerle öğrenmeyi seven bir fen öğretmeniyim.</textarea></label>
+            <fieldset class="fld wide"><legend>İlgi alanlarınız <em>en çok 5</em></legend><div class="pf-tags" data-pf-tags></div></fieldset>
+          </div>
+          <div class="pf-actions"><span class="pf-saved" role="status" data-pf-status></span><button type="submit" class="btn-primary">Kaydet</button></div>
+        </form>
+
+        <div class="pf-col forms2">
+          <!-- profil altındaki iki form: #formlar/tani ve #formlar/gelisim -->
+          <a class="pf-tile form-tile sm" href="#formlar/tani" data-form-link="tani">
+            <span class="tile-eyebrow">3 dakika</span>
+            <strong>Sizi tanıyalım</strong>
+            <span class="tile-text">Branşınız, kademeleriniz ve yapay zekâyı nasıl kullandığınız.</span>
+            <img class="tile-art" src="assets/profil/p05a.png" alt="" onerror="this.remove()">
+            <span class="tile-go">Forma git<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span>
+          </a>
+          <a class="pf-tile form-tile sm alt" href="#formlar/gelisim" data-form-link="gelisim">
+            <span class="tile-eyebrow">4 dakika</span>
+            <strong>Öğretmen Gelişim Formu</strong>
+            <span class="tile-text">Gelişmek istediğiniz alanlar ve size uygun eğitim biçimi.</span>
+            <img class="tile-art" src="assets/profil/p08.png" alt="" onerror="this.remove()">
+            <span class="tile-go">Forma git<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg></span>
+          </a>
+        </div>
+
+        <div class="pf-col">
+            <section class="pf-card pf-account" aria-labelledby="pf-sec-h">
+              <img class="pf-art" src="assets/profil/p02.png" alt="" onerror="this.remove()">
+              <div class="pf-card-head"><h2 id="pf-sec-h">Hesap ve güvenlik</h2></div>
+              <ul class="pf-checks">
+                <li><span class="pf-ic ok"><svg class="icon" aria-hidden="true"><use href="#i-shield" /></svg></span><span><strong>Hesabın aktif ve güvende</strong><span>Verilerin uçtan uca şifrelenir.</span></span></li>
+                <li><span class="pf-ic"><svg class="icon" aria-hidden="true"><use href="#i-lock" /></svg></span><span><strong>Son giriş</strong><span>Bugün 09:12 · bu cihaz</span></span></li>
+              </ul>
+              <button type="button" class="pf-tile btn-tile" data-pw-open>
+                <img class="tile-art" src="assets/profil/p03.png" alt="" onerror="this.remove()">
+                <strong>Parolayı değiştir</strong><span class="tile-text">Son değişiklik 3 ay önce</span>
+                <svg class="icon tile-arrow" aria-hidden="true"><use href="#i-arrow" /></svg>
+              </button>
+            <h3 class="pf-sub" id="pf-pref-h">Tercihler</h3>
+            <label class="tg"><img class="tg-art" src="assets/profil/p06.png" alt="" onerror="this.remove()"><span><strong>Bildirimler</strong><span>Teslimler, yorumlar ve duyurular</span></span><input type="checkbox" role="switch" checked><i aria-hidden="true"></i></label>
+            <div class="tg"><span class="tg-ic aa">Aa</span><span><strong>Yazı boyutu</strong><span>Tüm panelde geçerli</span></span>
+              <span class="seg" role="radiogroup" aria-label="Yazı boyutu" data-pf-size><button type="button" role="radio" aria-checked="true" data-size="n">A</button><button type="button" role="radio" aria-checked="false" data-size="l">A+</button></span></div>
+            <a class="pf-out" href="giris.html"><svg class="icon" aria-hidden="true"><use href="#i-logout" /></svg>Çıkış yap</a>
+            </section>
+        </div>
+      </div>
+
+      <dialog class="pf-dlg" aria-labelledby="pw-h" data-pw-dlg>
+        <form data-pf-pass-form novalidate>
+          <img class="pf-art" src="assets/profil/p03.png" alt="" onerror="this.remove()">
+          <div class="pf-card-head"><h2 id="pw-h">Parolayı değiştir</h2></div>
+          <label class="fld"><span>Mevcut parola</span><span class="pw"><input type="password" autocomplete="current-password" required data-pw-old><button type="button" aria-label="Parolayı göster" data-pw-eye><svg class="icon" aria-hidden="true"><use href="#i-eye" /></svg></button></span></label>
+          <label class="fld"><span>Yeni parola</span><span class="pw"><input type="password" autocomplete="new-password" required data-pw-new><button type="button" aria-label="Parolayı göster" data-pw-eye><svg class="icon" aria-hidden="true"><use href="#i-eye" /></svg></button></span></label>
+          <div class="pw-meter" data-pw-meter aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="pw-tip" data-pw-tip>En az 8 karakter, bir rakam ve bir büyük harf.</p>
+          <label class="fld"><span>Yeni parola (tekrar)</span><span class="pw"><input type="password" autocomplete="new-password" required data-pw-again><button type="button" aria-label="Parolayı göster" data-pw-eye><svg class="icon" aria-hidden="true"><use href="#i-eye" /></svg></button></span></label>
+          <div class="pf-actions"><span class="pf-saved" role="status" data-pw-status></span><button type="button" class="btn-ghost" data-pw-close>Vazgeç</button><button type="submit" class="btn-primary">Güncelle</button></div>
+        </form>
+      </dialog>
+    </section>
+  </div>
+</div>
+<!-- sohbet: sağ alttaki AI-LA işareti tam sayfa sohbeti açar. AI Stüdyo'nun yalnız Metin sekmesi: metin modelleri + geçmiş, Keşfet yok -->
+<div class="chat" data-chat>
+  <button type="button" class="chat-fab" aria-expanded="false" aria-controls="ai-chat" aria-label="AI-LA sohbet" data-chat-fab><img src="assets/aila-mark.png" alt="" width="30" height="30"></button>
+</div>
+<div class="ai-chat" id="ai-chat" role="dialog" aria-modal="true" aria-label="AI-LA sohbet" data-ai-chat hidden>
+  <aside class="ac-side" data-ac-side>
+    <div class="ac-side-head">
+      <span class="ac-side-ic"><svg class="icon" aria-hidden="true"><use href="#i-chat" /></svg></span>
+      <span><strong>Metin Geçmişi</strong><span data-ac-count>0 sohbet</span></span>
+      <button type="button" class="ac-ib" aria-label="Geçmişi gizle" data-ac-side-toggle><svg class="icon" aria-hidden="true"><use href="#i-sidebar" /></svg></button>
+    </div>
+    <button type="button" class="ac-new" data-ac-new><svg class="icon" aria-hidden="true"><use href="#i-plus" /></svg>Yeni Sohbet</button>
+    <div class="ac-list" data-ac-list></div>
+  </aside>
+  <section class="ac-main">
+    <header class="ac-top">
+      <button type="button" class="ac-ib ac-show-side" aria-label="Geçmişi göster" data-ac-side-toggle><svg class="icon" aria-hidden="true"><use href="#i-sidebar" /></svg></button>
+      <strong class="ac-title" data-ac-title>Yeni sohbet</strong>
+      <button type="button" class="ac-close" aria-label="Sohbeti kapat" data-ac-close><svg class="icon" aria-hidden="true"><use href="#i-x" /></svg></button>
+    </header>
+    <div class="ac-scroll" data-ac-scroll>
+      <div class="ac-hello" data-ac-hello>
+        <span class="ac-mascot" data-ac-cat><img class="cat-fallback" src="assets/kedi-yuz.png" alt=""></span>
+        <h2>Merhaba! Ben AI-LA</h2>
+        <p>Sana nasıl yardımcı olabilirim?</p>
+        <div class="ac-sugs">
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-doc" /></svg></span>Bu haftaki dersim için ders planı hazırla<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span>Konu sonu için 10 soruluk test üret<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-mail" /></svg></span>Velilere haftalık bilgilendirme mesajı yaz<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <button type="button" class="ac-sug"><span class="ac-sug-ic"><svg class="icon" aria-hidden="true"><use href="#i-star" /></svg></span>Konuyu üç farklı seviyede anlatan etkinlik öner<svg class="icon go" aria-hidden="true"><use href="#i-arrow" /></svg></button>
+        </div>
+      </div>
+      <ol class="ac-log" aria-live="polite" data-ac-log></ol>
+    </div>
+    <form class="ac-composer" data-ac-form>
+      <textarea rows="2" placeholder="Bir şeyler yaz…" aria-label="Mesaj" data-ac-input></textarea>
+      <div class="ac-tools">
+        <button type="button" class="ac-ib" aria-label="Dosya ekle" data-ac-attach><svg class="icon" aria-hidden="true"><use href="#i-clip" /></svg></button>
+        <span class="ac-sep" aria-hidden="true"></span>
+        <div class="ac-model">
+          <button type="button" class="ac-model-btn" aria-haspopup="listbox" aria-expanded="false" data-ac-model-btn><img src="assets/kedi-yuz.png" alt=""><span data-ac-model>Gemini 2.5 Flash Lite</span><svg class="icon" aria-hidden="true"><use href="#i-down" /></svg></button>
+          <ul class="ac-model-list" role="listbox" aria-label="Metin modeli" data-ac-model-list hidden></ul>
+        </div>
+        <span class="ac-grow"></span>
+        <button type="button" class="ac-ib" aria-label="Sesle yaz" data-ac-mic><svg class="icon" aria-hidden="true"><use href="#i-mic" /></svg></button>
+        <button type="button" class="ac-ib" aria-label="Rastgele bir fikir" data-ac-shuffle><svg class="icon" aria-hidden="true"><use href="#i-shuffle" /></svg></button>
+        <button type="submit" class="ac-send" aria-label="Gönder" disabled data-ac-send><svg class="icon" aria-hidden="true"><use href="#i-send" /></svg></button>
+      </div>
+    </form>
+    <p class="ac-note">AI-LA AI modelleri hata yapabilir. Bilgileri kontrol etmeyi unutma.</p>
+  </section>
+</div>
+</body>
+
+</html>

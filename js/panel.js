@@ -175,7 +175,7 @@ const go = () => {
   $$("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== view; });
   document.body.dataset.page = view;   // data-view değil: [data-view] seçicisi body'yi de görünüm sanıp gizler
   $$("[data-nav]").forEach((a) => { if (a.dataset.nav === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-  const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : $(`[data-nav="${view}"]`).textContent.trim();
+  const label = view === "gorev" ? $("#gorev-h").textContent : view === "profil" ? "Profil" : view === "formlar" ? "Seni tanıyalım" : ($(`[data-nav="${view}"]`)?.textContent.trim() || { ekosistem: "Ekosistem" }[view] || "AI-LA");   // index2: Ekosistem menüde yok
   document.title = `${label} · AI-LA`;
   week.active(view === "ana");
   if (view === "kendini-tani") {

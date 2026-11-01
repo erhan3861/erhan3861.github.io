@@ -87,6 +87,10 @@
 .col-new .icon { width: 16px; height: 16px; }
 .col-f-new { width: 100%; height: 40px; padding: 0 12px; border: 1.5px solid var(--s); border-radius: 12px; font: inherit; font-size: 14px; outline: 0; }
 .col-side-h.fh { margin-top: 16px; }
+/* ortak seçim kutuları (yönetici: sınıf filtresi ve satırdaki sınıf seçimi) */
+.col-sort { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+.col-sort select, .assign select { height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.col-sort select:focus, .assign select:focus { outline: 0; border-color: var(--s); }
 .col-main { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 10px; min-height: 0; }
 /* tek filtre çubuğu: arama + araç + sınıf + ders + atanabilir + sıralama + görünüm (eski açılır liste ve pencere yerine) */
 .col-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -263,13 +267,13 @@ a.bm-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(17, 20
 
 @media (max-height: 700px), (max-width: 1180px) {
   .tools-page .tab-pane.col, .stu-wrap { grid-template-columns: 1fr; }
-  .stu-row { grid-template-columns: 1fr; }
-  .stu-row .r { justify-self: start; }
-  .stu-row.th { display: none; }
   .bm-cls, .bm-map.km { grid-template-columns: 1fr; }
   .bm-map .km-stage { min-height: 460px; }
   .pf-col.forms2 { grid-template-rows: none; }
 }
 @media (max-width: 1080px) {
+  .stu-row { grid-template-columns: 1fr; }
+  .stu-row .r { justify-self: start; }
+  .stu-row.th { display: none; }
   .wb-tools { flex-wrap: wrap; justify-content: center; width: calc(100% - 24px); }
 }

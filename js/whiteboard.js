@@ -192,14 +192,28 @@ export function mountWhiteboard(root) {
   $("[data-wb-zoom]").addEventListener("click", () => { view = { z: 1, ox: 0, oy: 0 }; setZoom(1); });
   $("[data-wb-fit]").addEventListener("click", fit);
   $("[data-wb-clear]").addEventListener("click", () => { if (!objs.length) return; push(); objs = []; sel = null; draw(); });
-  // görsel ekle
-  $("[data-wb-img]").addEventListener("change", (e) => {
-    const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
+  // görsel ekle: dosya seç, Ctrl+V ile ekran görüntüsü yapıştır ya da dosyayı tahtaya sürükle-bırak
+  const addImage = (f, cx = W / 2, cy = H / 2) => {
+    if (!f || !f.type.startsWith("image/")) return; const rd = new FileReader();
     rd.onload = () => { const im = new Image(); im.onload = () => {
-      const s = Math.min(1, 420 / Math.max(im.width, im.height)), w = im.width * s, h = im.height * s;
-      imgCache.set(rd.result, im); push(); const o = { type: "image", src: rd.result, x: (W / 2 - view.ox) / view.z - w / 2, y: (H / 2 - view.oy) / view.z - h / 2, w, h }; objs.push(o); sel = o; setTool("secim"); sel = o; draw();
+      const s = Math.min(1, 520 / Math.max(im.width, im.height)), w = im.width * s, h = im.height * s;
+      imgCache.set(rd.result, im); push(); const o = { type: "image", src: rd.result, x: (cx - view.ox) / view.z - w / 2, y: (cy - view.oy) / view.z - h / 2, w, h }; objs.push(o); setTool("secim"); sel = o; draw(); save();
     }; im.src = rd.result; };
-    rd.readAsDataURL(f); e.target.value = "";
+    rd.readAsDataURL(f);
+  };
+  $("[data-wb-img]").addEventListener("change", (e) => { addImage(e.target.files[0]); e.target.value = ""; });
+  addEventListener("paste", (e) => {
+    if (root.hidden || editing || e.target.closest("input, textarea")) return;
+    const it = [...(e.clipboardData?.items || [])].find((x) => x.type.startsWith("image/"));
+    if (it) { e.preventDefault(); addImage(it.getAsFile()); }
+  });
+  stage.addEventListener("dragover", (e) => { if ([...e.dataTransfer.items].some((x) => x.kind === "file")) { e.preventDefault(); stage.classList.add("drop"); } });
+  stage.addEventListener("dragleave", (e) => { if (!stage.contains(e.relatedTarget)) stage.classList.remove("drop"); });
+  stage.addEventListener("drop", (e) => {
+    e.preventDefault(); stage.classList.remove("drop"); const r = cv.getBoundingClientRect();
+    const f = [...e.dataTransfer.files]; const json = f.find((x) => x.name.endsWith(".json"));
+    if (json) { loadFile(json); return; }
+    f.filter((x) => x.type.startsWith("image/")).forEach((x, i) => addImage(x, e.clientX - r.left + i * 24, e.clientY - r.top + i * 24));
   });
   const loadImages = () => objs.filter((o) => o.type === "image" && !imgCache.has(o.src)).forEach((o) => { const im = new Image(); im.onload = draw; im.src = o.src; imgCache.set(o.src, im); });
   // kaydet / yükle (dosya) ve PNG
@@ -207,27 +221,21 @@ export function mountWhiteboard(root) {
   const download = (href, name) => { const a = document.createElement("a"); a.href = href; a.download = name; a.click(); };
   $("[data-wb-save]").addEventListener("click", () => { const url = URL.createObjectURL(new Blob([JSON.stringify({ ad: nameOf(), objs })], { type: "application/json" })); download(url, `${nameOf()}.aila-tahta.json`); setTimeout(() => URL.revokeObjectURL(url), 1000); });
   $("[data-wb-load]").addEventListener("click", () => $("[data-wb-file]").click());
-  $("[data-wb-file]").addEventListener("change", (e) => {
-    const f = e.target.files[0]; if (!f) return;
-    f.text().then((t) => { try { const d = JSON.parse(t); push(); objs = d.objs || []; if (d.ad && root.querySelector("[data-wb-name]")) root.querySelector("[data-wb-name]").value = d.ad; loadImages(); sel = null; fit(); } catch (err) { alert("Bu dosya bir tahta dosyası değil."); } });
-    e.target.value = "";
-  });
+  const loadFile = (f) => f.text().then((t) => { try { const d = JSON.parse(t); push(); objs = d.objs || []; if (d.ad && root.querySelector("[data-wb-name]")) root.querySelector("[data-wb-name]").value = d.ad; loadImages(); sel = null; fit(); save(); } catch (err) { alert("Bu dosya bir tahta dosyası değil."); } });
+  $("[data-wb-file]").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) loadFile(f); e.target.value = ""; });
   $("[data-wb-png]").addEventListener("click", () => {
     const pad = 40, b = objs.length ? objs.map(bbox).reduce((a, c) => [Math.min(a[0], c[0]), Math.min(a[1], c[1]), Math.max(a[2], c[2]), Math.max(a[3], c[3])]) : [0, 0, W, H];
     const out = document.createElement("canvas"), s = 2; out.width = (b[2] - b[0] + pad * 2) * s; out.height = (b[3] - b[1] + pad * 2) * s;
     const o = out.getContext("2d"); o.fillStyle = "#fff"; o.fillRect(0, 0, out.width, out.height); o.setTransform(s, 0, 0, s, (pad - b[0]) * s, (pad - b[1]) * s);
     objs.forEach((x) => paint(o, x)); download(out.toDataURL("image/png"), `${nameOf()}.png`);
   });
-  // tam ekran / küçült: Fullscreen API; olmazsa sayfayı kaplayan sınıf
+  // tam ekran / küçült: tarayıcının Fullscreen API'si kullanılmaz; dosya seçme penceresi ya da ekran görüntüsü aracı
+  // pencere odağını alınca tarayıcı tam ekrandan çıkarıyordu. Sayfayı kaplayan sınıf yalnız Küçült ya da Esc ile kapanır.
   const fullBtn = $("[data-wb-full]");
-  const isFull = () => document.fullscreenElement === root || root.classList.contains("wb-max");
+  const isFull = () => root.classList.contains("wb-max");
   const syncFull = () => { const f = isFull(); fullBtn.setAttribute("aria-pressed", String(f)); fullBtn.setAttribute("aria-label", f ? "Küçült" : "Tam ekran"); fullBtn.title = f ? "Küçült (F)" : "Tam ekran (F)"; fullBtn.querySelector("span").textContent = f ? "Küçült" : "Tam ekran"; document.body.classList.toggle("wb-on", f); setTimeout(resize, 60); };
-  const toggleFull = () => {
-    if (isFull()) { if (document.fullscreenElement) document.exitFullscreen(); else { root.classList.remove("wb-max"); syncFull(); } return; }
-    if (root.requestFullscreen) root.requestFullscreen().catch(() => { root.classList.add("wb-max"); syncFull(); }); else { root.classList.add("wb-max"); syncFull(); }
-  };
+  const toggleFull = () => { root.classList.toggle("wb-max"); syncFull(); };
   fullBtn.addEventListener("click", toggleFull);
-  document.addEventListener("fullscreenchange", syncFull);
   addEventListener("keydown", (e) => { if (e.key === "Escape" && root.classList.contains("wb-max") && !editing) { root.classList.remove("wb-max"); syncFull(); } });
   addEventListener("resize", () => { if (!root.hidden) resize(); });
 

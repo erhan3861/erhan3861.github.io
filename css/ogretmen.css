@@ -77,11 +77,14 @@
 .wb-zoombar .icon, .wb-io .icon { width: 16px; height: 16px; }
 .wb-hint { position: absolute; left: 50%; bottom: 62px; max-width: calc(100% - 140px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--ink-3); transform: translateX(-50%); pointer-events: none; }
 /* tam ekran: Fullscreen API ya da sayfayı kaplayan sınıf; Esc ile küçülür */
-.page.wb:fullscreen, .page.wb.wb-max { position: fixed; inset: 0; z-index: 300; padding: 14px 16px 16px; margin: 0; background: var(--bg); }
-.page.wb:fullscreen .wb-back, .page.wb.wb-max .wb-back { display: none; }
-.page.wb:fullscreen .wb-top, .page.wb.wb-max .wb-top { grid-template-columns: 1fr auto; }
-.page.wb:fullscreen .wb-io, .page.wb.wb-max .wb-io { right: 14px; }
+.page.wb.wb-max { position: fixed; inset: 0; z-index: 300; padding: 14px 16px 16px; margin: 0; background: var(--bg); }
+.page.wb.wb-max .wb-back { display: none; }
+.page.wb.wb-max .wb-top { grid-template-columns: 1fr auto; }
+.page.wb.wb-max .wb-io { right: 14px; }
 body.wb-on .chat { display: none; }
+body.wb-on { overflow: hidden; }
+.wb-stage.drop { box-shadow: inset 0 0 0 3px var(--s), var(--shadow); }
+.wb-stage.drop::after { content: "Görseli bırakın"; position: absolute; inset: 0; display: grid; place-items: center; background: color-mix(in oklab, var(--s) 8%, transparent); font: 700 18px/1 var(--display); color: var(--s-ink); pointer-events: none; }
 @media (max-width: 1180px) { .wb-hint { display: none; } .wb-io button { font-size: 0; gap: 0; } }
 
 /* ---------- ortak: sekmeler, ikincil buton ---------- */

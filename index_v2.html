@@ -92,7 +92,17 @@
     .rl-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: rgba(255, 255, 255, .06); color: var(--accent); }
     .rl-list h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
     .rl-list p { margin: 6px 0 0; color: var(--ink-2); }
-    .rl-list .rl-meta { margin-top: 10px; font: 500 12px/1.4 var(--mono); color: var(--ink-3); }
+    /* yükseklik: liste ekranla aynı boyda; ilk başlık kartın üst kenarında, son satır alt kenarında */
+    @media (min-width: 1024px) {
+      .rl-grid { align-items: stretch; }
+      .rl-list { display: flex; flex-direction: column; justify-content: space-between; }
+      .rl-list li { padding: 0; border: 0; row-gap: 0; grid-template-rows: auto 1fr; }
+      /* son madde hariç her madde kalan boşluğu paylaşır; ayırıcı çizgi o boşluğun ortasında */
+      .rl-list li:not(:last-child) { flex: 1; }
+      .rl-list li:not(:last-child)::after { content: ""; grid-column: 1 / -1; min-height: 28px; background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
+      .rl-shot { align-self: center; }
+    }
+    @media (min-width: 1024px) and (max-width: 1279px) { .rl-list li:not(:last-child)::after { min-height: 16px; } }
     .rl-shot { margin: 0; overflow: hidden; border-radius: 22px; background: #f6f7fd; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .08); }
     .rl-shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; }
   </style>
@@ -299,9 +309,9 @@
       <div class="tabpanel rl-panel" role="tabpanel" id="panel-ogrenci" aria-labelledby="tab-ogrenci" tabindex="0" data-profile="Öğrenci profili">
         <div class="rl-grid">
           <ul class="rl-list">
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-check" /></svg></span><div><h3>Haftanın AI görevi</h3><p>Her hafta derslerle bağlantılı bir görev; teslim edince öğretmeninden geri bildirim gelir.</p><p class="rl-meta">Görev · Geri bildirim</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-brain-circuit" /></svg></span><div><h3>Kendini Tanı</h3><p>Ekosistemdeki çalışmaları Maarif Modeli’nin altı beceri alanında puana dönüşür.</p><p class="rl-meta">Beceri puanı · Beceri haritası</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-wand-sparkles" /></svg></span><div><h3>Rolüne uygun araçlar</h3><p>Görsel, video, müzik, kod ve 3D üretimi tek yerde; yanında AI-LA sohbet.</p><p class="rl-meta">Araçlar · Sohbet</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-check" /></svg></span><div><h3>Haftanın AI görevi</h3><p>Her hafta derslerle bağlantılı bir görev; teslim edince öğretmeninden geri bildirim gelir.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-brain-circuit" /></svg></span><div><h3>Kendini Tanı</h3><p>Ekosistemdeki çalışmaları Maarif Modeli’nin altı beceri alanında puana dönüşür.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-wand-sparkles" /></svg></span><div><h3>Rolüne uygun araçlar</h3><p>Görsel, video, müzik, kod ve 3D üretimi tek yerde; yanında AI-LA sohbet.</p></div></li>
           </ul>
           <figure class="rl-shot"><img src="assets/paneller/ogrenci.webp" width="1600" height="1000" decoding="async" alt="Öğrenci paneli: haftanın AI görevi, öne çıkan araçlar, Kendini Tanı beceri puanı, görev geri bildirimi ve son aktiviteler" /></figure>
         </div>
@@ -309,9 +319,9 @@
       <div class="tabpanel rl-panel" role="tabpanel" id="panel-ogretmen" aria-labelledby="tab-ogretmen" tabindex="0" data-profile="Öğretmen profili" hidden>
         <div class="rl-grid">
           <ul class="rl-list">
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-presentation" /></svg></span><div><h3>Ders tahtası</h3><p>Kalem, fosforlu kalem ve yapışkan notlarla anlat; tahtayı kaydet, sınıfla paylaş.</p><p class="rl-meta">Whiteboard · Paylaşım</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb" /></svg></span><div><h3>Ders planı ve sınav</h3><p>Kazanıma uygun plan, seviyeye göre karışık sınav ve rubrik dakikalar içinde.</p><p class="rl-meta">Akıllı araçlar · Ajanlar</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><div><h3>Sınıfların beceri haritası</h3><p>Her şubenin altı beceri alanındaki durumu tek bakışta.</p><p class="rl-meta">Sınıf yönetimi · Takip</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-presentation" /></svg></span><div><h3>Ders tahtası</h3><p>Kalem, fosforlu kalem ve yapışkan notlarla anlat; tahtayı kaydet, sınıfla paylaş.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-lightbulb" /></svg></span><div><h3>Ders planı ve sınav</h3><p>Kazanıma uygun plan, seviyeye göre karışık sınav ve rubrik dakikalar içinde.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><div><h3>Sınıfların beceri haritası</h3><p>Her şubenin altı beceri alanındaki durumu tek bakışta.</p></div></li>
           </ul>
           <figure class="rl-shot"><img src="assets/paneller/ogretmen.webp" width="1600" height="1000" decoding="async" alt="Öğretmen paneli: ders tahtası, ders planı ve sınav araçları, sınıfların beceri haritası durumu" /></figure>
         </div>
@@ -319,9 +329,9 @@
       <div class="tabpanel rl-panel" role="tabpanel" id="panel-yonetici" aria-labelledby="tab-yonetici" tabindex="0" data-profile="Yönetici profili" hidden>
         <div class="rl-grid">
           <ul class="rl-list">
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><div><h3>Kurum raporu</h3><p>Öğrenci, öğretmen, AI üretimi ve zaman tasarrufu tek ekranda; erken uyarılarla.</p><p class="rl-meta">Rapor · Uyarılar</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-layers" /></svg></span><div><h3>Beceri haritası ve kademeler</h3><p>İlkokul, ortaokul ve lise aynı altı beceri alanında karşılaştırılır.</p><p class="rl-meta">Maarif Modeli · Kademeler</p></div></li>
-            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-earth" /></svg></span><div><h3>Ekosistem verisi</h3><p>Bağlı platformlardan gelen veri tek yerde, standart biçimde.</p><p class="rl-meta">Köprü · Tek oturum</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart" /></svg></span><div><h3>Kurum raporu</h3><p>Öğrenci, öğretmen, AI üretimi ve zaman tasarrufu tek ekranda; erken uyarılarla.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-layers" /></svg></span><div><h3>Beceri haritası ve kademeler</h3><p>İlkokul, ortaokul ve lise aynı altı beceri alanında karşılaştırılır.</p></div></li>
+            <li><span class="rl-icon"><svg class="icon" aria-hidden="true"><use href="#i-earth" /></svg></span><div><h3>Ekosistem verisi</h3><p>Bağlı platformlardan gelen veri tek yerde, standart biçimde.</p></div></li>
           </ul>
           <figure class="rl-shot"><img src="assets/paneller/yonetici.webp" width="1600" height="1000" decoding="async" alt="Yönetici paneli: kurum raporu, uyarılar, AI kullanımı, kurum beceri haritası ve ekosistem verileri" /></figure>
         </div>

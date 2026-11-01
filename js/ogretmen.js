@@ -3,6 +3,7 @@
 // Tüm öğrenci, sınıf ve rapor verisi simülasyondur.
 import { hexToOklch, oklchToHex } from "./oklch.js";
 import { mountCat } from "./kedi.js";
+import { mountWhiteboard } from "./whiteboard.js";
 import { mountWeek, ARROW as WK_ARROW, ico, ders } from "./week.js";
 import { HAFTA } from "./hafta.js";
 import { PRODUCTS, AREAS, STUDENTS as SAMPLE } from "./data.js";
@@ -453,79 +454,10 @@ const T_SLIDES = [
 ].filter(Boolean);
 const week = mountWeek($("[data-week]"), T_SLIDES);
 
-/* ---------- whiteboard ---------- */
-const wbStage = $("[data-wb-stage]"), wbCanvas = $("[data-wb-canvas]"), wctx = wbCanvas.getContext("2d"), wbNotes = $("[data-wb-notes]");
-const WB_COLORS = ["#11142c", "#345de0", "#7b5cf0", "#e0453a", "#1f8a5b", "#f5b544"], WB_SIZES = [3, 6, 12];
-let wbTool = "kalem", wbColor = WB_COLORS[0], wbSize = 6, strokes = [], drawing = null, wbDpr = 1, wbReady = false;
-$("[data-wb-colors]").innerHTML = WB_COLORS.map((c, i) => `<button type="button" class="wb-c" aria-pressed="${!i}" aria-label="Renk ${i + 1}" style="--c:${c}" data-c="${c}"></button>`).join("");
-$("[data-wb-sizes]").innerHTML = WB_SIZES.map((s) => `<button type="button" class="wb-s" aria-pressed="${s === wbSize}" aria-label="Kalınlık ${s}" data-s="${s}"><i style="--d:${s + 2}px"></i></button>`).join("");
-const wbResize = () => {
-  wbDpr = Math.min(2, devicePixelRatio || 1);
-  const r = wbStage.getBoundingClientRect();
-  wbCanvas.width = Math.round(r.width * wbDpr); wbCanvas.height = Math.round(r.height * wbDpr);
-  redraw();
-};
-const paint = (s) => {
-  wctx.save();
-  wctx.globalCompositeOperation = s.tool === "silgi" ? "destination-out" : s.tool === "fosforlu" ? "multiply" : "source-over";
-  wctx.globalAlpha = s.tool === "fosforlu" ? .35 : 1;
-  wctx.strokeStyle = s.color; wctx.lineWidth = (s.tool === "fosforlu" ? s.size * 3 : s.tool === "silgi" ? s.size * 4 : s.size) * wbDpr;
-  wctx.lineCap = wctx.lineJoin = "round";
-  wctx.beginPath(); s.pts.forEach(([x, y], i) => (i ? wctx.lineTo(x * wbDpr, y * wbDpr) : wctx.moveTo(x * wbDpr, y * wbDpr)));
-  if (s.pts.length === 1) wctx.lineTo(s.pts[0][0] * wbDpr + .1, s.pts[0][1] * wbDpr);
-  wctx.stroke(); wctx.restore();
-};
-const redraw = () => { wctx.clearRect(0, 0, wbCanvas.width, wbCanvas.height); strokes.forEach(paint); };
-const pt = (e) => { const r = wbCanvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-wbCanvas.addEventListener("pointerdown", (e) => {
-  if (wbTool === "not") { addNote(...pt(e)); return; }
-  wbCanvas.setPointerCapture(e.pointerId);
-  drawing = { tool: wbTool, color: wbColor, size: wbSize, pts: [pt(e)] }; strokes.push(drawing); paint(drawing);
-});
-wbCanvas.addEventListener("pointermove", (e) => { if (!drawing) return; drawing.pts.push(pt(e)); redraw(); });
-addEventListener("pointerup", () => { drawing = null; });
-const NOTE_COLORS = ["#fff4c2", "#e3f0ff", "#f3e8ff", "#e6f6ee"];
-const addNote = (x, y, text = "") => {
-  const n = document.createElement("div");
-  n.className = "wb-note"; n.style.left = `${x - 80}px`; n.style.top = `${y - 20}px`; n.style.background = NOTE_COLORS[wbNotes.children.length % 4];
-  n.innerHTML = `<span class="wb-grip" aria-hidden="true"></span><p contenteditable="true" aria-label="Not">${esc(text)}</p><button type="button" class="wb-x" aria-label="Notu sil"><svg class="icon"><use href="#i-x" /></svg></button>`;
-  wbNotes.append(n); if (!text) $("p", n).focus();
-  const grip = $(".wb-grip", n);
-  grip.addEventListener("pointerdown", (e) => {
-    e.preventDefault(); grip.setPointerCapture(e.pointerId);
-    const ox = e.clientX - n.offsetLeft, oy = e.clientY - n.offsetTop;
-    const mv = (ev) => { n.style.left = `${ev.clientX - ox}px`; n.style.top = `${ev.clientY - oy}px`; };
-    grip.addEventListener("pointermove", mv);
-    grip.addEventListener("pointerup", () => grip.removeEventListener("pointermove", mv), { once: true });
-  });
-  $(".wb-x", n).addEventListener("click", () => n.remove());
-  setWbTool("kalem");
-};
-const setWbTool = (t) => { wbTool = t; $$("[data-tool]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tool === t))); wbStage.dataset.tool = t; };
-$$("[data-tool]").forEach((b) => b.addEventListener("click", () => setWbTool(b.dataset.tool)));
-$("[data-wb-colors]").addEventListener("click", (e) => { const b = e.target.closest("[data-c]"); if (!b) return; wbColor = b.dataset.c; $$(".wb-c").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); if (wbTool === "silgi") setWbTool("kalem"); });
-$("[data-wb-sizes]").addEventListener("click", (e) => { const b = e.target.closest("[data-s]"); if (!b) return; wbSize = +b.dataset.s; $$(".wb-s").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); });
-$("[data-wb-undo]").addEventListener("click", () => { strokes.pop(); redraw(); });
-$("[data-wb-clear]").addEventListener("click", () => { strokes = []; wbNotes.innerHTML = ""; redraw(); });
-addEventListener("keydown", (e) => { if (view === "whiteboard" && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !e.target.closest("[contenteditable], input")) { e.preventDefault(); strokes.pop(); redraw(); } });
-$("[data-wb-save]").addEventListener("click", () => {
-  const out = document.createElement("canvas"); out.width = wbCanvas.width; out.height = wbCanvas.height;
-  const o = out.getContext("2d"); o.fillStyle = "#fff"; o.fillRect(0, 0, out.width, out.height); o.drawImage(wbCanvas, 0, 0);
-  const sr = wbStage.getBoundingClientRect();
-  $$(".wb-note", wbNotes).forEach((n) => {
-    const r = n.getBoundingClientRect(), x = (r.left - sr.left) * wbDpr, y = (r.top - sr.top) * wbDpr;
-    o.fillStyle = n.style.background; o.fillRect(x, y, r.width * wbDpr, r.height * wbDpr);
-    o.fillStyle = "#11142c"; o.font = `${15 * wbDpr}px Inter, sans-serif`;
-    $("p", n).innerText.split("\n").forEach((line, i) => o.fillText(line, x + 14 * wbDpr, y + (34 + i * 20) * wbDpr));
-  });
-  const a = document.createElement("a"); a.download = `${$("[data-wb-name]").value.trim() || "tahta"}.png`; a.href = out.toDataURL("image/png"); a.click();
-});
+/* ---------- whiteboard (js/whiteboard.js) ---------- */
+const wb = mountWhiteboard($('[data-view="whiteboard"]'));
 $("[data-wb-name]").addEventListener("input", (e) => { $("[data-wb-last]").textContent = `Son tahta: ${e.target.value || "Adsız"} · bugün`; });
-addEventListener("resize", () => { if (view === "whiteboard") wbResize(); });
-const openWb = () => {
-  requestAnimationFrame(wbResize);
-  if (!wbReady) { wbReady = true; setTimeout(() => { addNote(140, 90, "½ + ¼ = ?"); addNote(360, 150, "Örnek: pizza dilimleri"); }, 50); }
-};
+const openWb = () => wb.open();
 
 /* ---------- sayfalar ---------- */
 let view = "ana";
@@ -541,7 +473,7 @@ const go = () => {
   let label = LABELS[view];
   if (view === "beceri") label = renderBeceri(a1, a2); else skill?.stop();
   if (view === "formlar") label = openForm(a1);
-  if (view === "whiteboard") openWb();
+  if (view === "whiteboard") openWb(); else wb.close();
   week.active(view === "ana");
   document.title = `${label} · AI-LA`;
 };

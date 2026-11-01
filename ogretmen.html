@@ -71,6 +71,16 @@
     <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16 7l3 3M18.5 4.5l2 2"/></symbol>
     <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5 6 5h12l2.5 8.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z"/><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7c-2.5 0-4-1-5.3-2.8L3.2 15a1.5 1.5 0 0 1 2.4-1.8L8 15.5"/></symbol>
+    <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 7.5-6.2 1.6L9.5 18.5z"/></symbol>
+    <symbol id="i-sq" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="4" y="5" width="16" height="14" rx="2.5"/></symbol>
+    <symbol id="i-diamond" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><path d="M12 3.5 20.5 12 12 20.5 3.5 12z"/></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="8.5"/></symbol>
+    <symbol id="i-arrow-ne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M9 5h10v10"/></symbol>
+    <symbol id="i-line" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M5 19 19 5"/></symbol>
+    <symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6.5V5h14v1.5M12 5v14M9 19h6"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
   </defs>
 </svg>
@@ -146,30 +156,57 @@
       </aside>
     </div>
 
-    <!-- whiteboard: temaya uygun ders tahtası -->
+    <!-- whiteboard: whitelabel tahtasının araçları (js/whiteboard.js); tam ekran ve küçült -->
     <section class="view page wb" data-view="whiteboard" aria-labelledby="wb-h" hidden>
       <div class="wb-top">
-        <a class="tani-back" href="#ana"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Ana sayfa</a>
+        <a class="tani-back wb-back" href="#ana"><svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>Ana sayfa</a>
         <h1 id="wb-h" class="wb-title"><input value="Kesirler" aria-label="Tahta adı" data-wb-name></h1>
         <div class="wb-actions">
-          <button type="button" class="wb-ib" aria-label="Geri al" data-wb-undo><svg class="icon"><use href="#i-undo" /></svg></button>
-          <button type="button" class="wb-ib" aria-label="Tahtayı temizle" data-wb-clear><svg class="icon"><use href="#i-trash" /></svg></button>
-          <button type="button" class="btn-ghost wb-dl" data-wb-save><svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>Görsel olarak indir</button>
+          <button type="button" class="wb-ib" aria-label="Geri al (Ctrl+Z)" title="Geri al (Ctrl+Z)" data-wb-undo><svg class="icon"><use href="#i-undo" /></svg></button>
+          <button type="button" class="wb-ib flip" aria-label="İleri al (Ctrl+Y)" title="İleri al (Ctrl+Y)" data-wb-redo><svg class="icon"><use href="#i-undo" /></svg></button>
+          <button type="button" class="btn-primary wb-full" aria-pressed="false" aria-label="Tam ekran" title="Tam ekran (F)" data-wb-full><svg class="icon" aria-hidden="true"><use href="#i-expand" /></svg><span>Tam ekran</span></button>
         </div>
       </div>
       <div class="wb-stage" data-wb-stage>
         <canvas data-wb-canvas></canvas>
-        <div class="wb-notes" data-wb-notes></div>
+        <textarea class="wb-editor" data-wb-editor aria-label="Metin" spellcheck="false"></textarea>
         <div class="wb-tools" role="toolbar" aria-label="Tahta araçları">
-          <button type="button" class="wb-tool" aria-pressed="true" data-tool="kalem" title="Kalem"><svg class="icon"><use href="#i-pen" /></svg></button>
-          <button type="button" class="wb-tool" aria-pressed="false" data-tool="fosforlu" title="Fosforlu kalem"><svg class="icon"><use href="#i-marker" /></svg></button>
-          <button type="button" class="wb-tool" aria-pressed="false" data-tool="silgi" title="Silgi"><svg class="icon"><use href="#i-eraser" /></svg></button>
-          <button type="button" class="wb-tool" aria-pressed="false" data-tool="not" title="Yapışkan not"><svg class="icon"><use href="#i-note" /></svg></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="el" title="El / kaydır (H, Boşluk)"><svg class="icon"><use href="#i-hand" /></svg><kbd>H</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="secim" title="Seçim (V)"><svg class="icon"><use href="#i-pointer" /></svg><kbd>V</kbd></button>
           <span class="wb-sep"></span>
-          <span class="wb-colors" data-wb-colors></span>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="dikdortgen" title="Dikdörtgen (R)"><svg class="icon"><use href="#i-sq" /></svg><kbd>R</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="elmas" title="Elmas (D)"><svg class="icon"><use href="#i-diamond" /></svg><kbd>D</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="elips" title="Elips (O)"><svg class="icon"><use href="#i-circle" /></svg><kbd>O</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="ok" title="Ok (A)"><svg class="icon"><use href="#i-arrow-ne" /></svg><kbd>A</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="cizgi" title="Çizgi (L)"><svg class="icon"><use href="#i-line" /></svg><kbd>L</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="true" data-tool="kalem" title="Kalem (P)"><svg class="icon"><use href="#i-pen" /></svg><kbd>P</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="metin" title="Metin (T)"><svg class="icon"><use href="#i-type" /></svg><kbd>T</kbd></button>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="not" title="Yapışkan not (N)"><svg class="icon"><use href="#i-note" /></svg><kbd>N</kbd></button>
+          <button type="button" class="wb-tool" data-tool="gorsel" title="Görsel ekle (I)"><svg class="icon"><use href="#i-image" /></svg><kbd>I</kbd></button>
           <span class="wb-sep"></span>
-          <span class="wb-sizes" data-wb-sizes></span>
+          <button type="button" class="wb-tool" aria-pressed="false" data-tool="silgi" title="Silgi (E)"><svg class="icon"><use href="#i-eraser" /></svg><kbd>E</kbd></button>
         </div>
+        <div class="wb-props" aria-label="Biçim">
+          <span class="wb-colors" data-wb-colors></span>
+          <span class="wb-sep h"></span>
+          <span class="wb-sizes" data-wb-sizes></span>
+          <button type="button" class="wb-fillbtn" aria-pressed="false" title="Şekli doldur" data-wb-fill><i></i>Dolgu</button>
+        </div>
+        <div class="wb-zoombar">
+          <button type="button" aria-label="Uzaklaştır" data-wb-zout>−</button>
+          <button type="button" class="wb-zv" title="100% yap" data-wb-zoom>100%</button>
+          <button type="button" aria-label="Yakınlaştır" data-wb-zin>+</button>
+          <button type="button" aria-label="Tümünü sığdır" title="Tümünü sığdır" data-wb-fit><svg class="icon"><use href="#i-fit" /></svg></button>
+        </div>
+        <div class="wb-io">
+          <button type="button" data-wb-clear><svg class="icon" aria-hidden="true"><use href="#i-trash" /></svg>Temizle</button>
+          <button type="button" data-wb-save><svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>Kaydet</button>
+          <button type="button" data-wb-load><svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg>Yükle</button>
+          <button type="button" data-wb-png><svg class="icon" aria-hidden="true"><use href="#i-image" /></svg>PNG</button>
+        </div>
+        <p class="wb-hint">Tekerlek: yakınlaş · Boşluk + sürükle: kaydır · Çift tık: metni düzenle · Ctrl+D çoğalt · Delete: sil · Shift: oranı koru</p>
+        <input type="file" accept="image/*" hidden data-wb-img>
+        <input type="file" accept=".json,application/json" hidden data-wb-file>
       </div>
     </section>
 
